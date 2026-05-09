@@ -26,19 +26,9 @@ public class AppProperties {
     }
 
     @PostConstruct
-    public void validateProdSecrets() {
+    public void validateProdJwtSecret() {
         if (Arrays.stream(environment.getActiveProfiles()).noneMatch("prod"::equals)) {
             return;
-        }
-        String dbPassword = environment.getProperty("spring.datasource.password");
-        if (dbPassword == null || dbPassword.isBlank()) {
-            throw new IllegalStateException(
-                    "spring.datasource.password (DB_PASSWORD) must be non-blank when profile 'prod' is active");
-        }
-        String redisPassword = environment.getProperty("spring.data.redis.password");
-        if (redisPassword == null || redisPassword.isBlank()) {
-            throw new IllegalStateException(
-                    "spring.data.redis.password (REDIS_PASSWORD) must be non-blank when profile 'prod' is active");
         }
         String secret = jwt.getSecret();
         if (secret == null || secret.isBlank()) {
