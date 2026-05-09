@@ -1,0 +1,28 @@
+# Maven build output
+target/
+
+# Application logs
+logs/
+*.log
+
+# IntelliJ IDEA
+*.iml
+.idea/
+
+# Eclipse / VS Code
+.classpath
+.project
+.settings/
+.factorypath
+.vscode/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Frontend (web/) build artifacts
+web/node_modules/
+web/dist/
+
+# Spring Boot static resources are produced by Maven from web/dist; never commit
+src/main/resources/static/**
