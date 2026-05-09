@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: eduze-manage
+  datasource:
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:eduze}?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8mb4&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root123}
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:redis123}
+      database: ${REDIS_DB:0}
+      timeout: 3s
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle: 8
+          min-idle: 2
+
+eduze:
+  tenant:
+    default-id: 1
+  jwt:
+    secret: ${JWT_SECRET:dev-only-secret-change-me-in-prod-32bytes-min}
+    access-ttl-min: 15
+    refresh-ttl-day: 7
+  storage:
+    local-root: ${EDUZE_STORAGE_LOCAL_ROOT:./storage}

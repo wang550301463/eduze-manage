@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: eduze-manage
+  profiles:
+    active: dev
 
 management:
   endpoints:
