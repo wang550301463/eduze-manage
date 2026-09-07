@@ -41,7 +41,7 @@ export function DataTable<T>({
       {toolbar ? <div className="flex flex-wrap items-center gap-2">{toolbar}</div> : null}
 
       {showEmpty ? (
-        <div className="rounded-lg border border-border p-8">{emptyContent}</div>
+        <div className="rounded-xl bg-card shadow-sm">{emptyContent}</div>
       ) : (
         <>
           {/* Desktop table */}

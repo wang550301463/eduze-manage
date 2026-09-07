@@ -5,13 +5,13 @@ import { forwardRef, type ComponentPropsWithoutRef, type HTMLAttributes, type Re
 import { cn } from '@/lib/cn';
 
 const sheetVariants = cva(
-  'fixed z-50 flex flex-col gap-4 border border-border bg-background shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-300',
+  'fixed z-50 flex flex-col gap-4 border border-border bg-card shadow-sm transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-300',
   {
     variants: {
       side: {
         right:
-          'inset-y-0 right-0 h-full w-full sm:w-[480px] data-[state=closed]:animate-slide-out-to-right data-[state=open]:animate-slide-in-from-right',
-        left: 'inset-y-0 left-0 h-full w-full sm:w-[480px]',
+          'inset-y-0 right-0 h-full w-full rounded-l-xl sm:w-[480px] data-[state=closed]:animate-slide-out-to-right data-[state=open]:animate-slide-in-from-right',
+        left: 'inset-y-0 left-0 h-full w-full rounded-r-xl sm:w-[480px]',
       },
     },
     defaultVariants: { side: 'right' },
