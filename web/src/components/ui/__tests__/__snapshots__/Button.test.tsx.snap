@@ -3,7 +3,7 @@
 exports[`Button > renders danger variant 1`] = `
 <div>
   <button
-    class="inline-flex items-center justify-center rounded-md font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none bg-error text-primary-fg hover:bg-error/90 h-10 px-4"
+    class="inline-flex items-center justify-center rounded-[10px] font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none bg-error text-primary-fg hover:bg-error/90 h-9 px-4 text-sm"
     type="button"
   >
     删除
@@ -14,7 +14,7 @@ exports[`Button > renders danger variant 1`] = `
 exports[`Button > renders default variant 1`] = `
 <div>
   <button
-    class="inline-flex items-center justify-center rounded-md font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none bg-primary text-primary-fg hover:bg-primary/90 h-10 px-4"
+    class="inline-flex items-center justify-center rounded-[10px] font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none bg-primary text-primary-fg hover:bg-primary/90 h-9 px-4 text-sm"
     type="button"
   >
     主按钮
@@ -25,7 +25,7 @@ exports[`Button > renders default variant 1`] = `
 exports[`Button > renders sm size 1`] = `
 <div>
   <button
-    class="inline-flex items-center justify-center rounded-md font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none bg-primary text-primary-fg hover:bg-primary/90 h-8 px-3 text-sm"
+    class="inline-flex items-center justify-center font-medium transition-colors disabled:opacity-50 disabled:pointer-events-none bg-primary text-primary-fg hover:bg-primary/90 h-8 px-3 text-sm rounded-lg"
     type="button"
   >
     小按钮

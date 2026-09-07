@@ -1,11 +1,9 @@
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { SimpleSelect } from '../Select';
 
 describe('SimpleSelect', () => {
-  it('opens and selects option', async () => {
-    const user = userEvent.setup();
+  it('opens and selects option', () => {
     render(
       <SimpleSelect
         options={[
@@ -16,7 +14,7 @@ describe('SimpleSelect', () => {
       />,
     );
     const combobox = screen.getByRole('combobox');
-    await user.click(combobox);
+    fireEvent.click(combobox);
     expect(combobox).toHaveAttribute('aria-expanded', 'true');
   });
 });
