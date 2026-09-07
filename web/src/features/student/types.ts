@@ -95,6 +95,33 @@ export type LessonHourLedger = {
   createdAt?: string;
 };
 
+/** 学员历史课程快照（审计） */
+export type StudentLessonHistory = {
+  id: EntityId;
+  branchId?: EntityId;
+  studentId: EntityId;
+  studentName: string;
+  lessonId: EntityId;
+  attendanceId?: EntityId | null;
+  courseId?: EntityId | null;
+  courseName?: string | null;
+  classGroupId?: EntityId | null;
+  classGroupName?: string | null;
+  teacherId?: EntityId | null;
+  teacherName?: string | null;
+  classRoomId?: EntityId | null;
+  classRoomName?: string | null;
+  startAt?: string | null;
+  endAt?: string | null;
+  source?: number | null;
+  sourceLabel?: string;
+  attendanceStatus?: number | null;
+  minutes?: number | null;
+  snapshotJson?: string | null;
+  occurredAt: string;
+  createdAt?: string;
+};
+
 export type PageResult<T> = {
   records: T[];
   total: number;

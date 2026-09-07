@@ -20,6 +20,7 @@ export const mainNavItems: NavItem[] = [
   { label: '工作台', path: '/', icon: GraduationCap },
   { label: '我的工作台', path: '/workbench', icon: GraduationCap, permission: 'lesson:teacher_view' },
   { label: '学员', path: '/students', icon: UsersThree, permission: 'student:read' },
+  { label: '课程记录', path: '/lesson-history', icon: ClipboardText, permission: 'student:read' },
   { label: '老师可用时段', path: '/teachers/availabilities', icon: ChalkboardTeacher, permission: 'teacher:availability:read' },
   { label: '课程', path: '/courses', icon: ChalkboardTeacher, permission: 'course:read' },
   { label: '分组标签', path: '/courses/class-groups', icon: UsersThree, permission: 'classgroup:read' },

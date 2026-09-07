@@ -8,6 +8,7 @@ import type {
   PageResult,
   StageAssessment,
   Student,
+  StudentLessonHistory,
   TeacherSummary,
 } from './types';
 
@@ -107,6 +108,17 @@ export const studentApi = {
     apiFetch<StageAssessment[]>(`/api/students/${sid(id)}/stage-assessments`),
   listLessonHourLedger: (id: EntityId) =>
     apiFetch<LessonHourLedger[]>(`/api/students/${sid(id)}/lesson-hour-ledger`),
+  listLessonHistories: (params: {
+    studentId?: string;
+    branchId?: string;
+    from?: string;
+    to?: string;
+    page?: string;
+    size?: string;
+  }) =>
+    apiFetch<PageResult<StudentLessonHistory>>(
+      `/api/student-lesson-histories${qs(params)}`,
+    ),
 };
 
 export const teacherApi = {

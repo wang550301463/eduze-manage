@@ -26,6 +26,11 @@ const AttendanceStatsPage = lazy(() =>
 const StudentListPage = lazy(() =>
   import('@/features/student/pages/StudentListPage').then((m) => ({ default: m.StudentListPage })),
 );
+const StudentLessonHistoryPage = lazy(() =>
+  import('@/features/student/pages/StudentLessonHistoryPage').then((m) => ({
+    default: m.StudentLessonHistoryPage,
+  })),
+);
 const CourseListPage = lazy(() =>
   import('@/features/course/pages/CourseListPage').then((m) => ({ default: m.CourseListPage })),
 );
@@ -124,6 +129,16 @@ export const router = createBrowserRouter([
               <ProtectedRoute permissions={['student:read']}>
                 <LazyPage>
                   <StudentListPage />
+                </LazyPage>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'lesson-history',
+            element: (
+              <ProtectedRoute permissions={['student:read']}>
+                <LazyPage>
+                  <StudentLessonHistoryPage />
                 </LazyPage>
               </ProtectedRoute>
             ),

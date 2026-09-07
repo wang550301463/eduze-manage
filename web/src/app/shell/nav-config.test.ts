@@ -15,5 +15,6 @@ describe('navItemEnd', () => {
     expect(navItemEnd('/attendance/leaves')).toBe(false);
     expect(navItemEnd('/courses/class-groups')).toBe(false);
     expect(navItemEnd('/students')).toBe(false);
+    expect(navItemEnd('/lesson-history')).toBe(false);
   });
 });
