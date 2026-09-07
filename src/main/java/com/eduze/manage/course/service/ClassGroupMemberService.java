@@ -107,7 +107,7 @@ public class ClassGroupMemberService {
     public void transfer(TransferClassRequest request) {
         ClassGroup from = classGroupService.requireGroup(request.getFromClassGroupId());
         ClassGroup to = classGroupService.requireGroup(request.getToClassGroupId());
-        requireBoundAvailability(from);
+        // 仅目标组必须已绑定；允许从历史未绑定分组迁出
         requireBoundAvailability(to);
         int toCount = classGroupService.countActiveMembers(to.getId());
         if (toCount + request.getStudentIds().size() > to.getCapacity()) {
