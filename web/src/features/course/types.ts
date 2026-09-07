@@ -22,6 +22,46 @@ export type ClassGroup = {
   capacity: number;
   currentCount: number;
   status: number;
+  tagColor?: string;
+  teacherAvailabilityId?: string | number;
+  dayOfWeek?: number;
+  startMinute?: number;
+  endMinute?: number;
+  /** 绑定时段老师姓名 */
+  teacherName?: string;
+  message?: string;
+};
+
+/** 未绑定 / 老师可用时段（分组绑定用） */
+export type UnboundAvailability = {
+  id: string | number;
+  teacherId: string | number;
+  teacherName?: string;
+  branchId: string | number;
+  dayOfWeek: number;
+  startMinute: number;
+  endMinute: number;
+  capacity: number;
+  defaultClassRoomId?: string | number;
+  validFrom: string;
+  validTo?: string;
+  status: number;
+  note?: string;
+  boundClassGroupId?: string | number | null;
+};
+
+export type NestedTeacherAvailability = {
+  teacherId: string | number;
+  branchId: string | number;
+  dayOfWeek: number;
+  startMinute: number;
+  endMinute: number;
+  capacity: number;
+  defaultClassRoomId?: string | number | null;
+  validFrom: string;
+  validTo?: string | null;
+  status?: number;
+  note?: string;
 };
 
 export type ClassRoom = {

@@ -13,6 +13,7 @@ import {
 } from '@/features/course/api';
 import { ClassGroupFormDialog } from '@/features/course/components/ClassGroupFormDialog';
 import { useDefaultBranchId } from '@/features/course/hooks/useDefaultBranchId';
+import { formatScheduleSlot } from '@/features/course/scheduleFormat';
 import type { ClassGroup } from '@/features/course/types';
 import { toast } from '@/lib/toast';
 
@@ -58,14 +59,24 @@ export function ClassGroupListPage(): JSX.Element {
   });
 
   const columns: ColumnDef<ClassGroup>[] = [
-    { accessorKey: 'name', header: '班级' },
+    { accessorKey: 'name', header: '分组' },
     { accessorKey: 'courseName', header: '课程' },
+    {
+      id: 'schedule',
+      header: '时段',
+      cell: ({ row }) =>
+        formatScheduleSlot(row.original.dayOfWeek, row.original.startMinute, row.original.endMinute),
+    },
+    {
+      id: 'teacher',
+      header: '老师',
+      cell: ({ row }) => row.original.teacherName ?? row.original.headTeacherName ?? '—',
+    },
     {
       id: 'capacity',
       header: '人数',
       cell: ({ row }) => `${row.original.currentCount}/${row.original.capacity}`,
     },
-    { accessorKey: 'headTeacherName', header: '班主任' },
   ];
 
   const closeDetail = () => {
@@ -81,11 +92,11 @@ export function ClassGroupListPage(): JSX.Element {
   return (
     <div className="space-y-4" data-testid="class-group-list-page">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="font-serif text-xl font-semibold">分组标签（旧称：班级）</h1>
+        <h1 className="font-serif text-xl font-semibold">分组标签</h1>
         <Button onClick={() => setFormOpen(true)}>新建分组</Button>
       </div>
       <div className="rounded-md border border-warning/40 bg-warning/10 p-3 text-sm text-warning">
-        班级已降级为「分组标签」，用于花名册分类。排课请前往「按老师周课表」基于老师可用时段配置。
+        分组绑定老师固定时段；排课仍由周课表生成。
       </div>
       <DataTable
         columns={columns}
@@ -111,13 +122,18 @@ export function ClassGroupListPage(): JSX.Element {
         onOpenChange={(open) => {
           if (!open) closeDetail();
         }}
-        title={group?.name ?? '班级详情'}
+        title={group?.name ?? '分组详情'}
         footer={null}
       >
         {group ? (
           <div className="space-y-4 text-sm">
             <p>
-              课程：{group.courseName} · 班主任：{group.headTeacherName ?? '—'}
+              课程：{group.courseName ?? '—'} · 老师：
+              {group.teacherName ?? group.headTeacherName ?? '—'}
+            </p>
+            <p>
+              时段：
+              {formatScheduleSlot(group.dayOfWeek, group.startMinute, group.endMinute)}
             </p>
             <div>
               <div className="mb-1 flex justify-between">

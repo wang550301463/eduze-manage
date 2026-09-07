@@ -1,6 +1,13 @@
 import type { ApiResponse } from '@/lib/api-types';
 import { apiClient } from '@/lib/axios';
-import type { ClassGroup, ClassMember, ClassRoom, Course, PageResult } from './types';
+import type {
+  ClassGroup,
+  ClassMember,
+  ClassRoom,
+  Course,
+  PageResult,
+  UnboundAvailability,
+} from './types';
 
 type BackendPage<T> = { records: T[]; total: number; page: number; size: number };
 
@@ -31,10 +38,21 @@ export async function deleteCourse(id: string): Promise<void> {
 export async function listClassGroups(
   page = 1,
   size = 20,
-  branchId?: number,
-  courseId?: number,
+  branchId?: number | string,
+  courseId?: number | string,
 ): Promise<PageResult<ClassGroup>> {
   return getPage('/class-groups', { page, size, branchId, courseId });
+}
+
+/** 本校区启用中、尚未被分组绑定的老师可用时段 */
+export async function listUnboundAvailabilities(
+  branchId: number | string,
+): Promise<UnboundAvailability[]> {
+  const { data } = await apiClient.get<ApiResponse<UnboundAvailability[]>>(
+    '/teacher-availabilities/unbound',
+    { params: { branchId } },
+  );
+  return data.data;
 }
 
 export async function getClassGroup(id: number | string): Promise<ClassGroup> {
