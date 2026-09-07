@@ -30,8 +30,8 @@ export function Sidebar({ className }: SidebarProps): JSX.Element {
   return (
     <aside
       className={cn(
-        'hidden h-full shrink-0 flex-col border-r border-border bg-background lg:flex',
-        collapsed ? 'w-16' : 'w-60',
+        'hidden h-full shrink-0 flex-col border-r border-border/80 bg-[#F2F2F7] lg:flex',
+        collapsed ? 'w-16' : 'w-[210px]',
         className,
       )}
       aria-label="主导航"
@@ -44,10 +44,10 @@ export function Sidebar({ className }: SidebarProps): JSX.Element {
               end={navItemEnd(item.path)}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+                  'flex items-center gap-3 rounded-[10px] px-3 py-2 text-sm transition-colors',
                   isActive
-                    ? 'bg-primary/10 font-medium text-primary'
-                    : 'text-muted-fg hover:bg-muted hover:text-foreground',
+                    ? 'bg-primary font-medium text-primary-fg'
+                    : 'text-foreground/80 hover:bg-muted',
                 )
               }
               aria-current={undefined}
@@ -71,10 +71,10 @@ export function Sidebar({ className }: SidebarProps): JSX.Element {
               end={navItemEnd(item.path)}
               className={({ isActive }) =>
                 cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+                  'flex items-center gap-3 rounded-[10px] px-3 py-2 text-sm transition-colors',
                   isActive
-                    ? 'bg-primary/10 font-medium text-primary'
-                    : 'text-muted-fg hover:bg-muted hover:text-foreground',
+                    ? 'bg-primary font-medium text-primary-fg'
+                    : 'text-foreground/80 hover:bg-muted',
                 )
               }
             >

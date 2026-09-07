@@ -29,7 +29,8 @@ const STATUS_OPTIONS = [
 
 export function StudentFilterBar({ filters, branches, onChange, onReset }: Props): JSX.Element {
   return (
-    <div className="flex flex-wrap items-end gap-3">
+    <div className="rounded-xl border border-border bg-white p-4">
+      <div className="flex flex-wrap items-end gap-3">
       <div className="min-w-[140px]">
         <Label>校区</Label>
         <SimpleSelect
@@ -63,6 +64,7 @@ export function StudentFilterBar({ filters, branches, onChange, onReset }: Props
       <Button type="button" variant="ghost" onClick={onReset}>
         重置
       </Button>
+      </div>
     </div>
   );
 }

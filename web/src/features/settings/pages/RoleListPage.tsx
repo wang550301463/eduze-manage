@@ -89,9 +89,9 @@ export function RoleListPage(): JSX.Element {
   ];
 
   return (
-    <div className="space-y-4" data-testid="role-list-page">
+    <div className="space-y-6" data-testid="role-list-page">
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-xl font-semibold">角色</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">角色</h1>
         <Button
           onClick={() => {
             setEditing(null);
@@ -103,12 +103,14 @@ export function RoleListPage(): JSX.Element {
           新建角色
         </Button>
       </div>
-      <DataTable
-        columns={columns}
-        data={data ?? []}
-        loading={isLoading}
-        rowKey={(r) => String(r.id)}
-      />
+      <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <DataTable
+          columns={columns}
+          data={data ?? []}
+          loading={isLoading}
+          rowKey={(r) => String(r.id)}
+        />
+      </div>
       <DialogFrame
         open={dialogOpen}
         onOpenChange={setDialogOpen}

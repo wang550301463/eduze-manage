@@ -43,24 +43,31 @@ export function WeeklySchedulePage(): JSX.Element {
   };
 
   return (
-    <div className="space-y-4" data-testid="weekly-schedule-page">
+    <div className="space-y-6" data-testid="weekly-schedule-page">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="font-serif text-xl font-semibold">周课表</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">周课表</h1>
         <WeekNavigator weekStart={weekStart} onChange={setWeekStart} />
       </div>
 
-      {data ? <WeeklyGrid schedule={data} onLessonClick={openLesson} /> : null}
+      {data ? (
+        <div className="overflow-hidden rounded-xl border border-border bg-white">
+          <WeeklyGrid schedule={data} onLessonClick={openLesson} />
+        </div>
+      ) : null}
 
       <div className="space-y-4 md:hidden">
         {(data?.days ?? []).map((day) => (
-          <section key={day.date}>
+          <section
+            key={day.date}
+            className="overflow-hidden rounded-xl border border-border bg-white p-3"
+          >
             <h2 className="mb-2 text-sm font-medium">{day.date}</h2>
             <ul className="space-y-2">
               {day.lessons.map((lesson) => (
                 <li key={lesson.id}>
                   <button
                     type="button"
-                    className="w-full rounded-lg border border-border p-3 text-left text-sm"
+                    className="w-full rounded-lg border border-border p-3 text-left text-sm hover:bg-muted/40"
                     style={{ borderLeftColor: lesson.color, borderLeftWidth: 4 }}
                     onClick={() => openLesson(lesson)}
                   >

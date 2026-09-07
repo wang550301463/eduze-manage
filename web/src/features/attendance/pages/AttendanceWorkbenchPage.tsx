@@ -14,6 +14,7 @@ import {
 } from '@/features/attendance/api';
 import type { DayPeriod, RosterItem } from '@/features/attendance/types';
 import { useAuthStore } from '@/features/auth/store';
+import { cn } from '@/lib/cn';
 import { toast } from '@/lib/toast';
 
 export function AttendanceWorkbenchPage(): JSX.Element {
@@ -80,7 +81,7 @@ export function AttendanceWorkbenchPage(): JSX.Element {
     <div className="space-y-6" data-testid="attendance-workbench">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="font-serif text-xl font-semibold">签到工作台</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">签到工作台</h1>
           <p className="text-sm text-muted-fg">
             已入园 {roster?.checkedInCount ?? 0} / {roster?.totalExpected ?? 0}
           </p>
@@ -92,31 +93,48 @@ export function AttendanceWorkbenchPage(): JSX.Element {
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <SimpleSelect
-          aria-label="校区"
-          value={branchId}
-          onValueChange={setBranchId}
-          options={branches.map((b) => ({ value: String(b.id), label: b.name }))}
-        />
-        <SimpleSelect
-          aria-label="时段"
-          value={period}
-          onValueChange={(v) => setPeriod(v as DayPeriod)}
-          options={[
-            { value: 'morning', label: '上午' },
-            { value: 'afternoon', label: '下午' },
-            { value: 'evening', label: '晚上' },
-          ]}
-        />
-        <DatePicker value={date} onChange={setDate} />
+      <div className="rounded-xl border border-border bg-white p-4">
+        <div className="grid gap-3 sm:grid-cols-3">
+          <SimpleSelect
+            aria-label="校区"
+            value={branchId}
+            onValueChange={setBranchId}
+            options={branches.map((b) => ({ value: String(b.id), label: b.name }))}
+          />
+          <div className="inline-flex rounded-lg bg-muted p-1">
+            {(
+              [
+                { value: 'morning', label: '上午' },
+                { value: 'afternoon', label: '下午' },
+                { value: 'evening', label: '晚上' },
+              ] as const
+            ).map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                className={cn(
+                  'flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                  period === opt.value
+                    ? 'bg-white text-foreground shadow-sm'
+                    : 'text-muted-fg hover:text-foreground',
+                )}
+                onClick={() => setPeriod(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <DatePicker value={date} onChange={setDate} />
+        </div>
       </div>
 
-      <AttendanceRosterTable
-        items={roster?.items ?? []}
-        onCheckIn={(item) => openPickup(item, 'in')}
-        onCheckOut={(item) => openPickup(item, 'out')}
-      />
+      <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <AttendanceRosterTable
+          items={roster?.items ?? []}
+          onCheckIn={(item) => openPickup(item, 'in')}
+          onCheckOut={(item) => openPickup(item, 'out')}
+        />
+      </div>
 
       <PickupSelectDialog
         open={pickupOpen}

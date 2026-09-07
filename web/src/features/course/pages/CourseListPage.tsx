@@ -81,9 +81,9 @@ export function CourseListPage(): JSX.Element {
   ];
 
   return (
-    <div className="space-y-4" data-testid="course-list-page">
+    <div className="space-y-6" data-testid="course-list-page">
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-xl font-semibold">课程产品</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">课程产品</h1>
         <Button
           onClick={() => {
             setEditing(null);
@@ -95,18 +95,20 @@ export function CourseListPage(): JSX.Element {
           新建课程
         </Button>
       </div>
-      <DataTable
-        columns={columns}
-        data={data?.items ?? []}
-        loading={isLoading}
-        rowKey={(r) => String(r.id)}
-        pageState={{
-          page,
-          pageSize: 20,
-          total: data?.total ?? 0,
-          onChange: ({ page: p }) => setPage(p),
-        }}
-      />
+      <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <DataTable
+          columns={columns}
+          data={data?.items ?? []}
+          loading={isLoading}
+          rowKey={(r) => String(r.id)}
+          pageState={{
+            page,
+            pageSize: 20,
+            total: data?.total ?? 0,
+            onChange: ({ page: p }) => setPage(p),
+          }}
+        />
+      </div>
       <DialogFrame
         open={dialogOpen}
         onOpenChange={setDialogOpen}

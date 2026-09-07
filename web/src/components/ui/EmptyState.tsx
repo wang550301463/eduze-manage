@@ -21,17 +21,19 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border p-12 text-center',
+        'flex flex-col items-center justify-center gap-3 py-12 text-center text-muted-fg',
         className,
       )}
     >
-      {icon ?? <Folders weight="duotone" className="h-12 w-12 text-muted-fg" aria-hidden />}
-      <h3 className="font-serif text-lg font-medium text-foreground">{title}</h3>
-      {description ? <p className="max-w-sm text-sm text-muted-fg">{description}</p> : null}
+      {icon ?? <Folders weight="duotone" className="h-10 w-10 opacity-60" aria-hidden />}
+      <h3 className="text-sm font-medium">{title}</h3>
+      {description ? <p className="max-w-sm text-sm">{description}</p> : null}
       {action ? (
-        <Button variant="default" onClick={action.onClick}>
-          {action.label}
-        </Button>
+        <div className="pt-1">
+          <Button variant="default" onClick={action.onClick}>
+            {action.label}
+          </Button>
+        </div>
       ) : null}
     </div>
   );

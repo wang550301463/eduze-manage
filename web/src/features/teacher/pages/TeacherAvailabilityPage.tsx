@@ -155,7 +155,7 @@ export function TeacherAvailabilityPage(): JSX.Element {
   return (
     <div className="space-y-4 pb-24" data-testid="teacher-availability-page">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="font-serif text-xl font-semibold">老师可用时段</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">老师可用时段</h1>
         <div className="flex flex-wrap gap-2">
           <SimpleSelect
             value={selectedBranchId}
@@ -181,7 +181,7 @@ export function TeacherAvailabilityPage(): JSX.Element {
         </div>
       </div>
 
-      <div className="rounded-lg border border-border bg-card">
+      <div className="overflow-hidden rounded-xl border border-border bg-white">
         <table className="w-full text-sm">
           <thead className="bg-muted text-muted-fg">
             <tr>

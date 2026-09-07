@@ -138,7 +138,7 @@ export function ClassGroupFormDialog({ open, onOpenChange, branchId, onSaved }: 
         </Button>
       }
     >
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div>
           <Label>分组名称</Label>
           <Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1" />

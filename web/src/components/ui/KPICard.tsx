@@ -14,7 +14,7 @@ export function KPICard({ title, value, suffix = '', trend, className }: KPICard
   return (
     <div
       className={cn(
-        'rounded-lg border border-border bg-background p-4 shadow-sm',
+        'rounded-xl bg-card p-4 shadow-sm',
         className,
       )}
     >

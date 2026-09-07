@@ -147,7 +147,7 @@ export function WeeklySchedulePage(): JSX.Element {
   return (
     <div className="space-y-4 pb-24" data-testid="weekly-schedule-page">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="font-serif text-xl font-semibold">周课表（按老师）</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">周课表（按老师）</h1>
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="ghost" onClick={() => setWeekStart(addDays(weekStart, -7))}>
             上一周
@@ -183,11 +183,11 @@ export function WeeklySchedulePage(): JSX.Element {
       </div>
 
       {activeColumns.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border bg-card p-12 text-center text-muted-fg">
+        <div className="rounded-xl border border-dashed border-border bg-white p-12 text-center text-muted-fg">
           本周暂无课次，可点击右上「批量排课」基于老师可用时段批量生成
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-card">
+        <div className="overflow-x-auto rounded-xl border border-border bg-white">
           <table className="w-full text-sm">
             <thead className="bg-muted">
               <tr>

@@ -182,7 +182,7 @@ export function StudentListPage(): JSX.Element {
   return (
     <div className="space-y-4 pb-24" data-testid="student-list-page">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="font-serif text-xl font-semibold">学员</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">学员</h1>
         <div className="flex flex-wrap gap-2">
           <Input
             placeholder="搜索姓名 / 入园编号"
@@ -207,38 +207,40 @@ export function StudentListPage(): JSX.Element {
           setFilters({ keyword: '', branchId: '', status: '', lowBalance: '', page: '1' })
         }
       />
-      <DataTable
-        columns={columns}
-        data={data?.records ?? []}
-        loading={isLoading}
-        rowKey={(r) => String(r.id)}
-        onRowClick={(row) => openDetail(row.id)}
-        pageState={{
-          page,
-          pageSize: Number(filters.size) || 20,
-          total: data?.total ?? 0,
-          onChange: ({ page: p }) => setFilters({ page: String(p) }),
-        }}
-        mobileCardRender={(row) => (
-          <>
-            <div className="flex items-center justify-between">
-              <span className="font-medium">{row.name}</span>
-              <span
-                className={cn(
-                  'rounded-full px-2 py-0.5 text-xs',
-                  statusBadgeClass(row.status),
-                )}
-              >
-                {statusLabel(row.status)}
-              </span>
-            </div>
-            <p className="text-sm text-muted-fg">
-              {row.classGroups.map((c) => c.name).join('、') || '未分班'} ·{' '}
-              <span className={cn(row.alertLow && 'text-danger')}>课时 {row.totalRemaining}</span>
-            </p>
-          </>
-        )}
-      />
+      <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <DataTable
+          columns={columns}
+          data={data?.records ?? []}
+          loading={isLoading}
+          rowKey={(r) => String(r.id)}
+          onRowClick={(row) => openDetail(row.id)}
+          pageState={{
+            page,
+            pageSize: Number(filters.size) || 20,
+            total: data?.total ?? 0,
+            onChange: ({ page: p }) => setFilters({ page: String(p) }),
+          }}
+          mobileCardRender={(row) => (
+            <>
+              <div className="flex items-center justify-between">
+                <span className="font-medium">{row.name}</span>
+                <span
+                  className={cn(
+                    'rounded-full px-2 py-0.5 text-xs',
+                    statusBadgeClass(row.status),
+                  )}
+                >
+                  {statusLabel(row.status)}
+                </span>
+              </div>
+              <p className="text-sm text-muted-fg">
+                {row.classGroups.map((c) => c.name).join('、') || '未分班'} ·{' '}
+                <span className={cn(row.alertLow && 'text-danger')}>课时 {row.totalRemaining}</span>
+              </p>
+            </>
+          )}
+        />
+      </div>
       <BulkActionBar
         count={selected.size}
         onAssign={() => setBulkMode('assign')}

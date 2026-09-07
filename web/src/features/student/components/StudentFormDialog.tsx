@@ -15,13 +15,12 @@ import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { SimpleSelect } from '@/components/ui/Select';
 import { ApiError, formatApiErrorMessage } from '@/lib/api';
+import { cn } from '@/lib/cn';
 import { toast } from '@/lib/toast';
 import { studentApi, teacherApi } from '../api';
 import { studentFormSchema, type StudentFormValues } from '../schemas';
 import type { Branch, Student } from '../types';
 import { GuardianSubForm } from './GuardianSubForm';
-import { SectionStepper } from './SectionStepper';
-
 const STEPS = ['基础', '健康', '家长', '班级'];
 
 type Props = {
@@ -167,9 +166,23 @@ export function StudentFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{editing ? '编辑学员' : '新建学员'}</DialogTitle>
+          <DialogTitle className="text-2xl font-semibold tracking-tight">
+            {editing ? '编辑学员' : '新建学员'}
+          </DialogTitle>
         </DialogHeader>
-        <SectionStepper steps={STEPS} current={step} />
+        <ol className="mb-4 flex gap-1 rounded-lg bg-muted p-1" aria-label="表单步骤">
+          {STEPS.map((label, i) => (
+            <li
+              key={label}
+              className={cn(
+                'flex-1 rounded-md px-2 py-1.5 text-center text-xs font-medium',
+                i === step ? 'bg-white text-foreground shadow-sm' : 'text-muted-fg',
+              )}
+            >
+              {label}
+            </li>
+          ))}
+        </ol>
         <form className="space-y-3" onSubmit={onSubmit}>
           {step === 0 ? (
             <>
