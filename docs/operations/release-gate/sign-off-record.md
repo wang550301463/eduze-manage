@@ -1,7 +1,7 @@
 # 投产签字记录
 
 **投产环境：** 单机构 / 多校区 / 单机 Docker Compose  
-**Git 版本：** `947df916c900d45bda210abd6cd936b2d05799e5` (tag `v0.1.0-release-candidate`)  
+**Git 版本：** tag `v0.1.0-release-candidate` on branch `main` (local only, not pushed)
 **投产负责人：** _待指定_  
 **计划投产日期：** 2026-09-07（加固整改完成日）  
 **审核模式：** Agent 自动门禁 + **人工签字仍为硬门禁**
