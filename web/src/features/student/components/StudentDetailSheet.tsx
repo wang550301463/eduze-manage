@@ -22,6 +22,7 @@ import { StudentFormDialog } from './StudentFormDialog';
 import { StudentGuardiansTab } from './StudentGuardiansTab';
 import { StudentLeaveTab } from './StudentLeaveTab';
 import { StudentPackagesTab } from './StudentPackagesTab';
+import { TransferClassDialog } from './TransferClassDialog';
 
 const TABS = ['基础', '家长', '课时包', '出勤', '请假'] as const;
 
@@ -40,6 +41,7 @@ export function StudentDetailSheet({
 }: Props): JSX.Element {
   const [tab, setTab] = useState<(typeof TABS)[number]>('基础');
   const [editOpen, setEditOpen] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
   const [confirmSuspend, setConfirmSuspend] = useState(false);
   const qc = useQueryClient();
 
@@ -133,7 +135,7 @@ export function StudentDetailSheet({
                     复学
                   </Button>
                 )}
-                <Button size="sm" variant="ghost" disabled title="阶段 G 启用">
+                <Button size="sm" variant="ghost" onClick={() => setTransferOpen(true)}>
                   调班
                 </Button>
               </div>
@@ -176,6 +178,18 @@ export function StudentDetailSheet({
           onSaved={() => {
             void qc.invalidateQueries({ queryKey: ['student', studentId] });
             void qc.invalidateQueries({ queryKey: ['students'] });
+          }}
+        />
+      ) : null}
+      {student ? (
+        <TransferClassDialog
+          open={transferOpen}
+          onOpenChange={setTransferOpen}
+          student={student}
+          onDone={() => {
+            void qc.invalidateQueries({ queryKey: ['student', studentId] });
+            void qc.invalidateQueries({ queryKey: ['students'] });
+            void qc.invalidateQueries({ queryKey: ['class-groups'] });
           }}
         />
       ) : null}

@@ -31,8 +31,8 @@ export async function deleteCourse(id: string): Promise<void> {
 export async function listClassGroups(
   page = 1,
   size = 20,
-  branchId?: number,
-  courseId?: number,
+  branchId?: number | string,
+  courseId?: number | string,
 ): Promise<PageResult<ClassGroup>> {
   return getPage('/class-groups', { page, size, branchId, courseId });
 }
