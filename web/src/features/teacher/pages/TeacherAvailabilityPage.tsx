@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import {
   Dialog,
@@ -11,6 +11,7 @@ import {
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { SimpleSelect } from '@/components/ui/Select';
+import { listClassGroups } from '@/features/course/api';
 import { ApiError, formatApiErrorMessage } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import { branchApi } from '@/features/student/api';
@@ -57,10 +58,30 @@ export function TeacherAvailabilityPage(): JSX.Element {
     queryFn: () => teacherApi.listAvailabilities(selectedTeacherId!),
     enabled: !!selectedTeacherId,
   });
+  const groupsQuery = useQuery({
+    queryKey: ['class-groups', 'for-availability', selectedBranchId],
+    queryFn: () => listClassGroups(1, 200, selectedBranchId),
+    enabled: !!selectedBranchId,
+  });
+
+  const groupNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const g of groupsQuery.data?.items ?? []) {
+      map.set(String(g.id), g.name);
+    }
+    return map;
+  }, [groupsQuery.data?.items]);
+
+  const boundLabel = (a: TeacherAvailability): string => {
+    if (!a.boundClassGroupId) return '未绑定';
+    if (a.boundClassGroupName) return a.boundClassGroupName;
+    return groupNameById.get(String(a.boundClassGroupId)) ?? '已绑定';
+  };
 
   const saveMut = useMutation({
     mutationFn: async () => {
-      const branchId = selectedBranchId ?? teachersQuery.data?.find((t) => t.id === selectedTeacherId)?.branchId;
+      const branchId =
+        selectedBranchId ?? teachersQuery.data?.find((t) => t.id === selectedTeacherId)?.branchId;
       if (!branchId) throw new Error('请选择校区');
       const body = {
         branchId,
@@ -167,6 +188,7 @@ export function TeacherAvailabilityPage(): JSX.Element {
               <th className="px-3 py-2 text-left">星期</th>
               <th className="px-3 py-2 text-left">时段</th>
               <th className="px-3 py-2 text-left">容量</th>
+              <th className="px-3 py-2 text-left">分组</th>
               <th className="px-3 py-2 text-left">生效起止</th>
               <th className="px-3 py-2 text-left">状态</th>
               <th className="px-3 py-2 text-left">备注</th>
@@ -176,46 +198,66 @@ export function TeacherAvailabilityPage(): JSX.Element {
           <tbody>
             {!selectedTeacherId ? (
               <tr>
-                <td colSpan={7} className="px-3 py-6 text-center text-muted-fg">
+                <td colSpan={8} className="px-3 py-6 text-center text-muted-fg">
                   请先选择老师
                 </td>
               </tr>
             ) : (availQuery.data ?? []).length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-3 py-6 text-center text-muted-fg">
+                <td colSpan={8} className="px-3 py-6 text-center text-muted-fg">
                   该老师暂无可用时段，点击右上「新增时段」开始配置
                 </td>
               </tr>
             ) : (
-              (availQuery.data ?? []).map((a) => (
-                <tr key={String(a.id)} className="border-t border-border">
-                  <td className="px-3 py-2">{DOW_LABELS[a.dayOfWeek]}</td>
-                  <td className="px-3 py-2">
-                    {minutesToHHMM(a.startMinute)} - {minutesToHHMM(a.endMinute)}
-                  </td>
-                  <td className="px-3 py-2">{a.capacity}</td>
-                  <td className="px-3 py-2">
-                    {a.validFrom}
-                    {a.validTo ? ` ~ ${a.validTo}` : ''}
-                  </td>
-                  <td className="px-3 py-2">{a.status === 1 ? '启用' : '停用'}</td>
-                  <td className="px-3 py-2">{a.note ?? ''}</td>
-                  <td className="px-3 py-2 text-right">
-                    <Button size="sm" variant="ghost" onClick={() => openEdit(a)}>
-                      编辑
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => {
-                        if (confirm('确认删除？')) deleteMut.mutate(a.id);
-                      }}
-                    >
-                      删除
-                    </Button>
-                  </td>
-                </tr>
-              ))
+              (availQuery.data ?? []).map((a) => {
+                const bound = Boolean(a.boundClassGroupId);
+                return (
+                  <tr key={String(a.id)} className="border-t border-border">
+                    <td className="px-3 py-2">{DOW_LABELS[a.dayOfWeek]}</td>
+                    <td className="px-3 py-2">
+                      {minutesToHHMM(a.startMinute)} - {minutesToHHMM(a.endMinute)}
+                    </td>
+                    <td className="px-3 py-2">{a.capacity}</td>
+                    <td className="px-3 py-2">
+                      {bound ? (
+                        <span className="text-foreground">{boundLabel(a)}</span>
+                      ) : (
+                        <span className="text-muted-fg">未绑定</span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {a.validFrom}
+                      {a.validTo ? ` ~ ${a.validTo}` : ''}
+                    </td>
+                    <td className="px-3 py-2">{a.status === 1 ? '启用' : '停用'}</td>
+                    <td className="px-3 py-2">{a.note ?? ''}</td>
+                    <td className="px-3 py-2 text-right">
+                      <Button size="sm" variant="ghost" onClick={() => openEdit(a)}>
+                        编辑
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        disabled={bound}
+                        title={
+                          bound
+                            ? '该时段已绑定分组，请先换绑或解散分组后再删除'
+                            : undefined
+                        }
+                        onClick={() => {
+                          if (bound) {
+                            toast.info('该时段已绑定分组，请先换绑或解散分组后再删除');
+                            return;
+                          }
+                          if (confirm('确认删除？')) deleteMut.mutate(a.id);
+                        }}
+                      >
+                        删除
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

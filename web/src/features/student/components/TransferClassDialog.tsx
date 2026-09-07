@@ -10,92 +10,106 @@ import type { ClassGroup } from '@/features/course/types';
 import { ApiError, formatApiErrorMessage } from '@/lib/api';
 import { toast } from '@/lib/toast';
 import { studentApi } from '../api';
+import type { Student } from '../types';
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  studentIds: string[];
-  mode: 'assign' | 'transfer';
-  branchId?: string | number;
+  student: Student;
   onDone: () => void;
 };
 
 function groupLabel(g: ClassGroup): string {
   const slot = formatScheduleSlot(g.dayOfWeek, g.startMinute, g.endMinute);
   const teacher = g.teacherName ?? g.headTeacherName;
-  return [
+  const parts = [
     g.name,
     g.courseName,
     slot !== '—' ? slot : null,
     teacher,
     `（${g.currentCount}/${g.capacity}）`,
-  ]
-    .filter(Boolean)
-    .join(' · ');
+  ].filter(Boolean);
+  return parts.join(' · ');
 }
 
-export function BulkAssignClassDialog({
+export function TransferClassDialog({
   open,
   onOpenChange,
-  studentIds,
-  mode,
-  branchId,
+  student,
   onDone,
 }: Props): JSX.Element {
-  const [classGroupId, setClassGroupId] = useState('');
+  const currentGroups = student.classGroups ?? [];
+  const isAssign = currentGroups.length === 0;
   const [fromClassGroupId, setFromClassGroupId] = useState('');
+  const [toClassGroupId, setToClassGroupId] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    setClassGroupId('');
-    setFromClassGroupId('');
-  }, [open]);
+    const first = student.classGroups?.[0];
+    setFromClassGroupId(first ? String(first.id) : '');
+    setToClassGroupId('');
+  }, [open, student.id, student.classGroups]);
 
   const { data: groupsPage, isLoading } = useQuery({
-    queryKey: ['class-groups-bulk', branchId],
-    queryFn: () => listClassGroups(1, 100, branchId),
+    queryKey: ['class-groups-for-transfer', student.branchId],
+    queryFn: () => listClassGroups(1, 100, student.branchId),
     enabled: open,
   });
 
-  const options = useMemo(
+  const groupById = useMemo(() => {
+    const map = new Map<string, ClassGroup>();
+    for (const g of groupsPage?.items ?? []) {
+      map.set(String(g.id), g);
+    }
+    return map;
+  }, [groupsPage?.items]);
+
+  const toOptions = useMemo(() => {
+    const items = groupsPage?.items ?? [];
+    return items
+      .filter((g) => g.status === 1)
+      .filter((g) => String(g.id) !== fromClassGroupId)
+      .map((g) => ({
+        value: String(g.id),
+        label: groupLabel(g),
+      }));
+  }, [groupsPage?.items, fromClassGroupId]);
+
+  const fromOptions = useMemo(
     () =>
-      (groupsPage?.items ?? [])
-        .filter((g) => g.status === 1)
-        .map((g) => ({ value: String(g.id), label: groupLabel(g) })),
-    [groupsPage?.items],
+      currentGroups.map((g) => {
+        const full = groupById.get(String(g.id));
+        return {
+          value: String(g.id),
+          label: full ? groupLabel(full) : g.name,
+        };
+      }),
+    [currentGroups, groupById],
   );
 
-  const toOptions = useMemo(
-    () => options.filter((o) => o.value !== fromClassGroupId),
-    [options, fromClassGroupId],
-  );
-
-  const selected = (groupsPage?.items ?? []).find((g) => String(g.id) === classGroupId);
+  const selectedTo = groupById.get(toClassGroupId);
 
   const canSubmit =
-    Boolean(classGroupId) &&
-    (mode === 'assign' || Boolean(fromClassGroupId)) &&
-    !submitting &&
-    studentIds.length > 0;
+    Boolean(toClassGroupId) && (isAssign || Boolean(fromClassGroupId)) && !submitting;
 
   const submit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
     try {
-      if (mode === 'assign') {
+      if (isAssign) {
         await studentApi.bulkAssignClass({
-          studentIds,
-          classGroupId,
+          studentIds: [student.id],
+          classGroupId: toClassGroupId,
         });
-        toast.success('批量分班成功');
+        toast.success('分班成功');
       } else {
         await studentApi.bulkTransferClass({
-          studentIds,
+          studentIds: [student.id],
           fromClassGroupId,
-          toClassGroupId: classGroupId,
+          toClassGroupId,
         });
-        toast.success('批量调班成功');
+        toast.success('调班成功');
       }
       onDone();
       onOpenChange(false);
@@ -116,8 +130,12 @@ export function BulkAssignClassDialog({
     <DialogFrame
       open={open}
       onOpenChange={onOpenChange}
-      title={mode === 'assign' ? '批量分班' : '批量调班'}
-      description={`已选 ${studentIds.length} 名学员`}
+      title={isAssign ? '分班' : '调班'}
+      description={
+        isAssign
+          ? `为「${student.name}」选择分组`
+          : `将「${student.name}」调至其他分组（需同一校区）`
+      }
       footer={
         <Button onClick={() => void submit()} disabled={!canSubmit}>
           {submitting ? '提交中…' : '确认'}
@@ -125,48 +143,52 @@ export function BulkAssignClassDialog({
       }
     >
       <div className="space-y-4">
-        {mode === 'transfer' ? (
+        {!isAssign ? (
           <div>
-            <Label>原分组</Label>
-            {isLoading ? (
-              <p className="mt-1 text-sm text-muted-fg">加载中…</p>
-            ) : (
+            <Label>当前分组</Label>
+            {fromOptions.length > 1 ? (
               <SimpleSelect
                 className="mt-1"
-                aria-label="原分组"
+                aria-label="当前分组"
+                options={fromOptions}
                 value={fromClassGroupId}
                 onValueChange={setFromClassGroupId}
-                options={options}
-                placeholder="请选择原分组"
               />
+            ) : (
+              <p className="mt-1 text-sm text-foreground">{fromOptions[0]?.label ?? '—'}</p>
             )}
           </div>
         ) : null}
         <div>
           <Label>目标分组</Label>
           {isLoading ? (
-            <p className="mt-1 text-sm text-muted-fg">加载中…</p>
+            <p className="mt-1 text-sm text-muted-fg">加载分组列表…</p>
           ) : toOptions.length === 0 ? (
-            <p className="mt-1 text-sm text-muted-fg">暂无可用分组</p>
+            <p className="mt-1 text-sm text-muted-fg">当前校区暂无可用分组</p>
           ) : (
             <SimpleSelect
               className="mt-1"
               aria-label="目标分组"
-              value={classGroupId}
-              onValueChange={setClassGroupId}
               options={toOptions}
-              placeholder="请选择分组（含时段）"
+              value={toClassGroupId}
+              onValueChange={setToClassGroupId}
+              placeholder="请选择分组"
             />
           )}
         </div>
-        {selected ? (
+        {selectedTo ? (
           <div className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
             <p>
               时段：
-              {formatScheduleSlot(selected.dayOfWeek, selected.startMinute, selected.endMinute)}
+              {formatScheduleSlot(
+                selectedTo.dayOfWeek,
+                selectedTo.startMinute,
+                selectedTo.endMinute,
+              )}
             </p>
             <p className="text-muted-fg">
-              老师：{selected.teacherName ?? selected.headTeacherName ?? '—'}
+              老师：{selectedTo.teacherName ?? selectedTo.headTeacherName ?? '—'} · 人数{' '}
+              {selectedTo.currentCount}/{selectedTo.capacity}
             </p>
           </div>
         ) : null}

@@ -48,6 +48,8 @@ export const scheduleApi = {
       '/api/lessons/bulk-generate',
       { method: 'POST', body: JSON.stringify(body) },
     ),
+  createLesson: (body: unknown) =>
+    apiFetch<unknown>('/api/lessons', { method: 'POST', body: JSON.stringify(body) }),
   lessonStudents: (lessonId: EntityId) =>
     apiFetch<LessonStudentRow[]>(`/api/lessons/${sid(lessonId)}/students`),
   addLessonStudent: (lessonId: EntityId, body: unknown) =>

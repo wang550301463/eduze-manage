@@ -78,6 +78,15 @@ export const studentApi = {
       method: 'POST',
       body: JSON.stringify(body),
     }),
+  bulkTransferClass: (body: {
+    studentIds: EntityId[];
+    fromClassGroupId: EntityId;
+    toClassGroupId: EntityId;
+  }) =>
+    apiFetch<void>('/api/students/bulk/transfer-class', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
   changeMentor: (
     id: EntityId,
     body: { toTeacherId: EntityId | number; reason?: string; keepSubscriptions?: boolean },

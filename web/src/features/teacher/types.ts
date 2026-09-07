@@ -10,6 +10,7 @@ export type Teacher = {
 export type TeacherAvailability = {
   id: EntityId;
   teacherId: EntityId;
+  teacherName?: string;
   branchId: EntityId;
   dayOfWeek: number;
   startMinute: number;
@@ -20,6 +21,10 @@ export type TeacherAvailability = {
   validTo?: string;
   status: number;
   note?: string;
+  /** 已绑定的分组 ID；未绑定则为 null */
+  boundClassGroupId?: EntityId | null;
+  /** 若后端提供分组名称则展示 */
+  boundClassGroupName?: string | null;
 };
 
 export type TeacherSchedule = {

@@ -257,6 +257,7 @@ export function StudentListPage(): JSX.Element {
         onOpenChange={(o) => !o && setBulkMode(null)}
         studentIds={[...selected]}
         mode={bulkMode ?? 'assign'}
+        branchId={filters.branchId || undefined}
         onDone={() => {
           setSelected(new Set());
           void refetch();
