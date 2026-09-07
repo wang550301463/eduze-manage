@@ -9,7 +9,7 @@
 |------|------|------|
 | 投产加固代码 | ✅ | auth/tenant/business/audit/db/ops 已合入工作区 |
 | 自动门禁 | ✅ | 见 `hardening-2026-09-07.md` |
-| HTTPS 全栈 Compose 演练 | ⏸ | 镜像已构建；compose up 待环境执行 |
+| HTTPS 全栈 Compose 演练 | ✅ | 冷启动 healthy；登录/学员/考勤/Prometheus；备份恢复计数一致 |
 | 人工签字 / 正式 CA | ⏸ | 环境放行条件 |
 
 ## RC-00 基线结果（2026-09-07 重测）

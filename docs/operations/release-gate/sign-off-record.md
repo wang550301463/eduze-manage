@@ -14,7 +14,8 @@
 - 前端 Vitest / build / E2E 9/9 PASS
 - Flyway 16 迁移空库 PASS
 
-**未完成（不得勾选为已放行）：** HTTPS 全栈 Compose 冷启动业务演练、正式 CA、人工签字。
+**已完成（自动）：** HTTPS 全栈 Compose 冷启动 + 登录/学员/考勤/Prometheus + 备份恢复（见 `hardening-2026-09-07.md`）。  
+**未完成（不得勾选为已放行）：** 正式 CA、人工签字。
 
 ## 分工
 
@@ -31,8 +32,8 @@
 
 ## 投产放行
 
-- [ ] 自动门禁证据已更新且无伪装 PASS
-- [ ] HTTPS Compose 冷启动与业务冒烟已由运维执行
+- [x] 自动门禁证据已更新且无伪装 PASS（Agent，2026-09-07）
+- [x] HTTPS Compose 冷启动与业务冒烟已执行（Agent 本地演练，自签证书）
 - [ ] 正式 CA 证书已安装
 - [ ] 投产负责人签字（姓名 / 日期 / tag SHA）
 

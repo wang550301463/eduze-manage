@@ -2,6 +2,16 @@
 
 投产前请完成 [release-gate 检查清单](release-gate/README.md)（84 项 Blocker 全 PASS + **人工签字**）。
 
+## Compose 环境变量注意
+
+`docker compose --env-file docker/.env` **不会覆盖**宿主机已 export 的同名变量。  
+若 shell 里残留短的 `DB_PASSWORD` / `JWT_SECRET` 等，会导致生产校验失败或连错库。冷启动前执行：
+
+```bash
+unset DB_PASSWORD REDIS_PASSWORD JWT_SECRET BOOTSTRAP_ADMIN_PASSWORD MYSQL_PWD
+docker compose -f docker/docker-compose.yml --env-file docker/.env up -d
+```
+
 ## 人工签字门禁
 
 Agent 自审 / 交叉复验**不能替代**真人签字。正式上线前必须：

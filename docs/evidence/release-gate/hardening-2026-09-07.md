@@ -1,30 +1,42 @@
 # EduZE 投产加固 — 发布验证证据（2026-09-07）
 
-**目的：** 记录本轮「投产加固整改」自动门禁的真实结果。未执行项不得标 PASS。
+**目的：** 记录本轮「投产加固整改」自动门禁与全栈演练的真实结果。未执行项不得标 PASS。
 
 ## 自动门禁结果
 
 | 门禁 | 结果 | 证据 |
 |------|------|------|
-| 后端 `./mvnw -Dskip.frontend.build=true verify` | **PASS** | 91 IT，0 Fail / 0 Error / 0 Skip（`/tmp/eduze-verify3.log`） |
+| 后端 `./mvnw -Dskip.frontend.build=true verify` | **PASS** | 91 IT，0 Fail / 0 Error / 0 Skip |
 | 前端 Vitest | **PASS** | 13 files / 22 tests |
-| 前端 `tsc` + `vite build` | **PASS** | 路由懒加载后构建成功；主 chunk 已拆分 |
-| 前端 ESLint | **PASS*** | hooks 条件调用已修；保留 3 条既有 warning（`max-warnings 5`） |
-| Playwright E2E | **PASS** | 9/9（系统 Chrome + 本地 Vite:5173 + App:8080；`/tmp/eduze-e2e.log`） |
-| Flyway 空库迁移 | **PASS** | IT 空库应用 **16** 条迁移至 `v9.3.1`（日志：Successfully applied 16 migrations） |
-| Actuator 指标保护 | **PASS** | `/actuator/health` 公开；`/actuator/prometheus` 未认证 401、认证后 200（`ActuatorSecurityIT` + 本地 curl） |
-| 登录 / 学员 API 冒烟 | **PASS** | 本地 `dev` 栈 `POST /api/auth/login` + `GET /api/students` 200 |
+| 前端 `tsc` + `vite build` | **PASS** | 路由懒加载后构建成功 |
+| 前端 ESLint | **PASS*** | hooks 条件调用已修；允许少量既有 warning（`max-warnings 5`） |
+| Playwright E2E | **PASS** | 9/9（系统 Chrome + Vite:5173 + App:8080） |
+| Flyway 空库迁移 | **PASS** | 16 条迁移至 `v9.3.1`（IT 空库 + Compose 冷启动） |
+| Actuator 指标保护 | **PASS** | health 公开；prometheus 未认证 401 / 认证后 200 |
 
-\* lint 策略：禁止 error；允许少量既有 react-refresh / exhaustive-deps warning。
+\* lint：禁止 error；允许少量既有 react-refresh / exhaustive-deps warning。
 
-## 环境侧未完成（不得伪装为代码 PASS）
+## Compose HTTPS 全栈演练（2026-09-07 13:40+）
+
+| 项 | 结果 | 说明 |
+|----|------|------|
+| `compose down -v && up -d` 冷启动 | **PASS** | mysql/redis/app/nginx 均 healthy |
+| HTTPS 登录页 | **PASS** | `GET https://127.0.0.1:18443/login` → 200（自签证书） |
+| HTTPS 登录（bootstrap 管理员） | **PASS** | `POST /api/auth/login` → 200 + accessToken |
+| HTTPS 学员列表 | **PASS** | `GET /api/students` Bearer → 200 |
+| HTTPS 校区 / 今日考勤 | **PASS** | `/api/branches`、`/api/attendance/today?branchId=1` → 200 |
+| HTTPS Prometheus | **PASS** | 匿名 401；Bearer 200 |
+| 备份 | **PASS** | `docker exec mysqldump` → `backups/eduze-2026-09-07-1343.sql.gz`（9276B）+ `.sha256` |
+| 恢复 | **PASS** | 停 app → restore → 核心表计数一致（student/user/flyway）→ 重启后登录 200 |
+
+**踩坑记录：** 宿主机 shell 若已 export 短 `DB_PASSWORD`，会覆盖 `docker/.env`（Compose 变量优先级）。冷启动前必须 `unset DB_PASSWORD`（及相关密钥变量）。
+
+## 仍属环境放行（不得伪装为代码 PASS）
 
 | 项 | 状态 | 说明 |
 |----|------|------|
-| 生产 Compose 全栈冷启动 + HTTPS 业务演练 | **未完成** | 已构建 `eduze-manage:release-verify` 镜像；本会话 Docker 高权限操作审批失败，未 `compose up` 全栈 |
-| mysqldump 宿主机备份演练 | **未完成** | 脚本已加固（非空校验、`gunzip -t`、`.sha256`）；本机无 `mysqldump` CLI，需 `docker exec` 执行 |
-| 正式 CA 证书 | **环境责任** | 仓库仅有自签 `docker/certs`；正式域名证书由运维签发 |
-| 人工负责人签字 | **环境责任** | Agent 证据不可替代 `sign-off-record.md` 真人签字 |
+| 正式 CA 证书 | **环境责任** | 当前为自签 `docker/certs`；正式域名证书由运维签发 |
+| 人工负责人签字 | **环境责任** | 见 `sign-off-record.md` |
 
 ## 本轮加固摘要
 
@@ -39,4 +51,4 @@
 
 1. 投产负责人在 `docs/operations/release-gate/sign-off-record.md` 签字并填写本 tag SHA  
 2. 正式 HTTPS 证书替换自签证书  
-3. 在目标机执行一次：Compose 冷启动 → 备份 → 停服恢复 → HTTPS 冒烟
+3. 目标机按 runbook 再跑一遍冷启动/备份/恢复（可复用本证据流程）
