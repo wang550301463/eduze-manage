@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 
 class ScheduleServiceIT extends AbstractApiIT {
 
+    private long _availSlot;
+
     @Test
     void weekSchedule_returnsSevenDays() throws Exception {
         String token = adminToken();
@@ -32,9 +34,23 @@ class ScheduleServiceIT extends AbstractApiIT {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         """
-                                        {"branchId":1,"name":"周课表班","courseId":%d,"capacity":10}
+                                        {
+                                          "branchId":1,
+                                          "name":"周课表班",
+                                          "courseId":%d,
+                                          "nestedAvailability":{
+                                            "teacherId":1102,
+                                            "branchId":1,
+                                            "dayOfWeek":2,
+                                            "startMinute":%d,
+                                            "endMinute":%d,
+                                            "capacity":10,
+                                            "validFrom":"2026-01-01",
+                                            "status":1
+                                          }
+                                        }
                                         """
-                                                .formatted(courseId)))
+                                                .formatted(courseId, (int) ((_availSlot = System.nanoTime()) % 1100), (int) (_availSlot % 1100) + 60)))
                         .andReturn()
                         .getResponse()
                         .getContentAsString())

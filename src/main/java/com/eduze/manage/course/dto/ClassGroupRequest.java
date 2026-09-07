@@ -1,5 +1,6 @@
 package com.eduze.manage.course.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -23,7 +24,7 @@ public class ClassGroupRequest {
 
     private Long headTeacherId;
 
-    @NotNull
+    /** 容量由绑定时段镜像；请求中若传入会被覆盖。 */
     private Integer capacity;
 
     private Integer status;
@@ -31,4 +32,11 @@ public class ClassGroupRequest {
     /** 标签颜色：#RRGGBB */
     @Pattern(regexp = "^$|^#[0-9A-Fa-f]{6}$", message = "颜色须为 #RRGGBB 格式")
     private String tagColor;
+
+    /** 绑定已有时段；与 nestedAvailability 二选一（新建必填其一）。 */
+    private Long teacherAvailabilityId;
+
+    /** 现场新建时段载荷；非空时服务端先建 availability 再绑定。 */
+    @Valid
+    private NestedTeacherAvailabilityRequest nestedAvailability;
 }

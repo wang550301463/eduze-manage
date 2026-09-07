@@ -30,6 +30,12 @@ public class TeacherAvailabilityController {
         return ApiResponse.ok(service.list(teacherId));
     }
 
+    @GetMapping("/api/teacher-availabilities/unbound")
+    @PreAuthorize("hasAuthority('teacher:availability:read') or hasAuthority('classgroup:read')")
+    public ApiResponse<List<TeacherAvailabilityResponse>> listUnbound(@RequestParam Long branchId) {
+        return ApiResponse.ok(service.listUnbound(branchId));
+    }
+
     @PostMapping("/api/teachers/{teacherId}/availabilities")
     @PreAuthorize("hasAuthority('teacher:availability:write')")
     public ApiResponse<TeacherAvailabilityResponse> create(

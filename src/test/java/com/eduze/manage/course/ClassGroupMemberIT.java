@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.eduze.manage.support.AbstractApiIT;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 class ClassGroupMemberIT extends AbstractApiIT {
+
+    private static final AtomicInteger SLOT = new AtomicInteger(200);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -38,15 +41,30 @@ class ClassGroupMemberIT extends AbstractApiIT {
                 .get("id")
                 .asLong();
 
+        int start = SLOT.getAndAdd(90);
         classGroupId = objectMapper
                 .readTree(mockMvc.perform(post("/api/class-groups")
                                 .header("Authorization", bearer(token))
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         """
-                                        {"branchId":1,"name":"容量测试班","courseId":%d,"capacity":1}
+                                        {
+                                          "branchId":1,
+                                          "name":"容量测试班",
+                                          "courseId":%d,
+                                          "nestedAvailability":{
+                                            "teacherId":1101,
+                                            "branchId":1,
+                                            "dayOfWeek":3,
+                                            "startMinute":%d,
+                                            "endMinute":%d,
+                                            "capacity":1,
+                                            "validFrom":"2026-01-01",
+                                            "status":1
+                                          }
+                                        }
                                         """
-                                                .formatted(courseId)))
+                                                .formatted(courseId, start, start + 60)))
                         .andReturn()
                         .getResponse()
                         .getContentAsString())

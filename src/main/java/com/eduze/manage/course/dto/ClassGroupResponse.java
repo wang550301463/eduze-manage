@@ -19,4 +19,12 @@ public class ClassGroupResponse {
     private final Integer currentCount;
     private final Integer status;
     private final String tagColor;
+    private final Long teacherAvailabilityId;
+    private final Integer dayOfWeek;
+    private final Integer startMinute;
+    private final Integer endMinute;
+    /** 绑定时段老师姓名（与班主任一致）。 */
+    private final String teacherName;
+    /** 换绑后提示重新 bulk-generate（可选）。 */
+    private final String message;
 }

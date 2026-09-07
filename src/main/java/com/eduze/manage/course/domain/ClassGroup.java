@@ -13,6 +13,8 @@ public class ClassGroup extends BaseEntity {
     private String name;
     private Long courseId;
     private Long headTeacherId;
+    /** 绑定的老师可用时段（1:1）。 */
+    private Long teacherAvailabilityId;
     private Integer capacity;
     private Integer status;
     private String tagColor;

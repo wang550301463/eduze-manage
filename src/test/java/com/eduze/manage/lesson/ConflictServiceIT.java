@@ -19,6 +19,8 @@ import org.springframework.http.MediaType;
 
 class ConflictServiceIT extends AbstractApiIT {
 
+    private long _availSlot;
+
     @Autowired
     private ConflictService conflictService;
 
@@ -46,9 +48,23 @@ class ConflictServiceIT extends AbstractApiIT {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         """
-                                        {"branchId":1,"name":"冲突班","courseId":%d,"capacity":10,"headTeacherId":1001}
+                                        {
+                                          "branchId":1,
+                                          "name":"冲突班",
+                                          "courseId":%d,
+                                          "nestedAvailability":{
+                                            "teacherId":1101,
+                                            "branchId":1,
+                                            "dayOfWeek":1,
+                                            "startMinute":%d,
+                                            "endMinute":%d,
+                                            "capacity":10,
+                                            "validFrom":"2026-01-01",
+                                            "status":1
+                                          }
+                                        }
                                         """
-                                                .formatted(courseId)))
+                                                .formatted(courseId, (int) ((_availSlot = System.nanoTime()) % 1100), (int) (_availSlot % 1100) + 60)))
                         .andReturn()
                         .getResponse()
                         .getContentAsString())

@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 class LessonRescheduleIT extends AbstractApiIT {
 
+    private long _availSlot;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -41,9 +43,23 @@ class LessonRescheduleIT extends AbstractApiIT {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         """
-                                        {"branchId":1,"name":"调课班","courseId":%d,"capacity":10}
+                                        {
+                                          "branchId":1,
+                                          "name":"调课班",
+                                          "courseId":%d,
+                                          "nestedAvailability":{
+                                            "teacherId":1101,
+                                            "branchId":1,
+                                            "dayOfWeek":3,
+                                            "startMinute":%d,
+                                            "endMinute":%d,
+                                            "capacity":10,
+                                            "validFrom":"2026-01-01",
+                                            "status":1
+                                          }
+                                        }
                                         """
-                                                .formatted(courseId)))
+                                                .formatted(courseId, (int) ((_availSlot = System.nanoTime()) % 1100), (int) (_availSlot % 1100) + 60)))
                         .andReturn()
                         .getResponse()
                         .getContentAsString())
@@ -125,9 +141,23 @@ class LessonRescheduleIT extends AbstractApiIT {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         """
-                                        {"branchId":1,"name":"调课冲突班","courseId":%d,"capacity":10}
+                                        {
+                                          "branchId":1,
+                                          "name":"调课冲突班",
+                                          "courseId":%d,
+                                          "nestedAvailability":{
+                                            "teacherId":1102,
+                                            "branchId":1,
+                                            "dayOfWeek":3,
+                                            "startMinute":%d,
+                                            "endMinute":%d,
+                                            "capacity":10,
+                                            "validFrom":"2026-01-01",
+                                            "status":1
+                                          }
+                                        }
                                         """
-                                                .formatted(courseId)))
+                                                .formatted(courseId, (int) ((_availSlot = System.nanoTime()) % 1100), (int) (_availSlot % 1100) + 60)))
                         .andReturn()
                         .getResponse()
                         .getContentAsString())

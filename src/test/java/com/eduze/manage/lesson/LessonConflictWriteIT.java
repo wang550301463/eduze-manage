@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 
 class LessonConflictWriteIT extends AbstractApiIT {
 
+    private long _availSlot;
+
     private String token;
     private long classGroupId;
     private long otherGroupId;
@@ -76,9 +78,23 @@ class LessonConflictWriteIT extends AbstractApiIT {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(
                                         """
-                                        {"branchId":1,"name":"%s","courseId":%d,"capacity":10}
+                                        {
+                                          "branchId":1,
+                                          "name":"%s",
+                                          "courseId":%d,
+                                          "nestedAvailability":{
+                                            "teacherId":1101,
+                                            "branchId":1,
+                                            "dayOfWeek":4,
+                                            "startMinute":%d,
+                                            "endMinute":%d,
+                                            "capacity":10,
+                                            "validFrom":"2026-01-01",
+                                            "status":1
+                                          }
+                                        }
                                         """
-                                                .formatted(name, courseId)))
+                                                .formatted(name, courseId, (int) ((_availSlot = System.nanoTime()) % 1100), (int) (_availSlot % 1100) + 60)))
                         .andReturn()
                         .getResponse()
                         .getContentAsString())

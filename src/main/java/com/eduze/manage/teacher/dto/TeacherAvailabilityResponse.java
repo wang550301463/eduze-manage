@@ -9,6 +9,7 @@ import lombok.Getter;
 public class TeacherAvailabilityResponse {
     private final Long id;
     private final Long teacherId;
+    private final String teacherName;
     private final Long branchId;
     private final Integer dayOfWeek;
     private final Integer startMinute;
@@ -19,4 +20,6 @@ public class TeacherAvailabilityResponse {
     private final LocalDate validTo;
     private final Integer status;
     private final String note;
+    /** 已绑定的分组 ID；未绑定则为 null。 */
+    private final Long boundClassGroupId;
 }
