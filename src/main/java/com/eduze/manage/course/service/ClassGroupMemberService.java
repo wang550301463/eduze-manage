@@ -8,13 +8,20 @@ import com.eduze.manage.course.domain.StudentClassGroup;
 import com.eduze.manage.course.dto.AddMembersRequest;
 import com.eduze.manage.course.dto.ClassMemberResponse;
 import com.eduze.manage.course.dto.TransferClassRequest;
-import com.eduze.manage.course.mapper.ClassGroupMapper;
 import com.eduze.manage.course.mapper.StudentClassGroupMapper;
+import com.eduze.manage.lesson.domain.LessonSubscription;
+import com.eduze.manage.lesson.mapper.LessonSubscriptionMapper;
 import com.eduze.manage.student.domain.Student;
+import com.eduze.manage.student.dto.AssignMentorRequest;
 import com.eduze.manage.student.mapper.StudentMapper;
+import com.eduze.manage.student.service.StudentMentorService;
+import com.eduze.manage.teacher.domain.TeacherAvailability;
+import com.eduze.manage.teacher.mapper.TeacherAvailabilityMapper;
 import com.eduze.manage.tenant.TenantContext;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,10 +30,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ClassGroupMemberService {
 
-    private final ClassGroupMapper classGroupMapper;
     private final StudentClassGroupMapper studentClassGroupMapper;
     private final StudentMapper studentMapper;
     private final ClassGroupService classGroupService;
+    private final TeacherAvailabilityMapper teacherAvailabilityMapper;
+    private final LessonSubscriptionMapper lessonSubscriptionMapper;
+    private final StudentMentorService studentMentorService;
 
     public List<ClassMemberResponse> listMembers(Long classGroupId, boolean activeOnly) {
         classGroupService.requireGroup(classGroupId);
@@ -45,14 +54,16 @@ public class ClassGroupMemberService {
     @Transactional
     public void addMembers(Long classGroupId, AddMembersRequest request) {
         ClassGroup group = classGroupService.requireGroup(classGroupId);
+        TeacherAvailability avail = requireBoundAvailability(group);
         int current = classGroupService.countActiveMembers(classGroupId);
         int incoming = request.getStudentIds().size();
         if (current + incoming > group.getCapacity()) {
             throw new BizException(ErrorCode.CONFLICT, "超出班级容量");
         }
         LocalDateTime now = LocalDateTime.now();
+        LocalDate today = LocalDate.now();
         for (Long studentId : request.getStudentIds()) {
-            requireStudent(studentId);
+            Student student = requireStudent(studentId);
             Long existing = studentClassGroupMapper.selectCount(Wrappers.<StudentClassGroup>lambdaQuery()
                     .eq(StudentClassGroup::getTenantId, TenantContext.getTenantId())
                     .eq(StudentClassGroup::getClassGroupId, classGroupId)
@@ -67,12 +78,15 @@ public class ClassGroupMemberService {
             membership.setClassGroupId(classGroupId);
             membership.setJoinedAt(now);
             studentClassGroupMapper.insert(membership);
+
+            alignMentor(student, avail.getTeacherId());
+            ensureActiveSubscription(studentId, group.getBranchId(), avail, today);
         }
     }
 
     @Transactional
     public void removeMember(Long classGroupId, Long studentId) {
-        classGroupService.requireGroup(classGroupId);
+        ClassGroup group = classGroupService.requireGroup(classGroupId);
         StudentClassGroup membership = studentClassGroupMapper.selectOne(Wrappers.<StudentClassGroup>lambdaQuery()
                 .eq(StudentClassGroup::getTenantId, TenantContext.getTenantId())
                 .eq(StudentClassGroup::getClassGroupId, classGroupId)
@@ -84,12 +98,17 @@ public class ClassGroupMemberService {
         }
         membership.setLeftAt(LocalDateTime.now());
         studentClassGroupMapper.updateById(membership);
+        if (group.getTeacherAvailabilityId() != null) {
+            deactivateSubscription(studentId, group.getTeacherAvailabilityId());
+        }
     }
 
     @Transactional
     public void transfer(TransferClassRequest request) {
         ClassGroup from = classGroupService.requireGroup(request.getFromClassGroupId());
         ClassGroup to = classGroupService.requireGroup(request.getToClassGroupId());
+        requireBoundAvailability(from);
+        requireBoundAvailability(to);
         int toCount = classGroupService.countActiveMembers(to.getId());
         if (toCount + request.getStudentIds().size() > to.getCapacity()) {
             throw new BizException(ErrorCode.CONFLICT, "目标班级容量不足");
@@ -107,6 +126,63 @@ public class ClassGroupMemberService {
 
     public List<ClassMemberResponse> rosterForLesson(Long classGroupId) {
         return listMembers(classGroupId, true);
+    }
+
+    private TeacherAvailability requireBoundAvailability(ClassGroup group) {
+        if (group.getTeacherAvailabilityId() == null) {
+            throw new BizException(ErrorCode.VALIDATION_FAILED, "该分组尚未绑定老师可用时段，无法进组/调班");
+        }
+        TeacherAvailability avail = teacherAvailabilityMapper.selectById(group.getTeacherAvailabilityId());
+        if (avail == null) {
+            throw new BizException(ErrorCode.NOT_FOUND, "分组绑定的可用时段不存在");
+        }
+        return avail;
+    }
+
+    private void alignMentor(Student student, Long teacherId) {
+        if (Objects.equals(student.getMentorTeacherId(), teacherId)) {
+            return;
+        }
+        AssignMentorRequest req = new AssignMentorRequest();
+        req.setToTeacherId(teacherId);
+        req.setReason("进组同步主带");
+        req.setKeepSubscriptions(true);
+        studentMentorService.changeMentor(student.getId(), req);
+    }
+
+    private void ensureActiveSubscription(Long studentId, Long branchId, TeacherAvailability avail, LocalDate today) {
+        Long existing = lessonSubscriptionMapper.selectCount(Wrappers.<LessonSubscription>lambdaQuery()
+                .eq(LessonSubscription::getTenantId, TenantContext.getTenantId())
+                .eq(LessonSubscription::getStudentId, studentId)
+                .eq(LessonSubscription::getTeacherAvailabilityId, avail.getId())
+                .eq(LessonSubscription::getStatus, 1));
+        if (existing != null && existing > 0) {
+            return;
+        }
+        LessonSubscription sub = new LessonSubscription();
+        sub.setTenantId(TenantContext.getTenantId());
+        sub.setBranchId(branchId);
+        sub.setStudentId(studentId);
+        sub.setTeacherId(avail.getTeacherId());
+        sub.setTeacherAvailabilityId(avail.getId());
+        sub.setValidFrom(today);
+        sub.setStatus(1);
+        sub.setSource("NORMAL");
+        lessonSubscriptionMapper.insert(sub);
+    }
+
+    private void deactivateSubscription(Long studentId, Long teacherAvailabilityId) {
+        List<LessonSubscription> subs = lessonSubscriptionMapper.selectList(Wrappers.<LessonSubscription>lambdaQuery()
+                .eq(LessonSubscription::getTenantId, TenantContext.getTenantId())
+                .eq(LessonSubscription::getStudentId, studentId)
+                .eq(LessonSubscription::getTeacherAvailabilityId, teacherAvailabilityId)
+                .eq(LessonSubscription::getStatus, 1));
+        LocalDate today = LocalDate.now();
+        for (LessonSubscription sub : subs) {
+            sub.setStatus(0);
+            sub.setValidTo(today);
+            lessonSubscriptionMapper.updateById(sub);
+        }
     }
 
     private Student requireStudent(Long studentId) {
