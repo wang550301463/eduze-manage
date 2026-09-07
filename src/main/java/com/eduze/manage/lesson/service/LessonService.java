@@ -10,6 +10,7 @@ import com.eduze.manage.course.mapper.ClassGroupMapper;
 import com.eduze.manage.course.service.ClassGroupService;
 import com.eduze.manage.lesson.domain.Lesson;
 import com.eduze.manage.lesson.domain.LessonChangeLog;
+import com.eduze.manage.lesson.domain.LessonSource;
 import com.eduze.manage.lesson.domain.LessonStatus;
 import com.eduze.manage.lesson.dto.BulkGenerateRequest;
 import com.eduze.manage.lesson.dto.BulkGenerateResult;
@@ -78,27 +79,48 @@ public class LessonService {
 
     @Transactional
     public LessonResponse create(LessonRequest request) {
-        ClassGroup group = classGroupService.requireGroup(request.getClassGroupId());
-        Long branchId = request.getBranchId() != null ? request.getBranchId() : group.getBranchId();
+        Integer source = request.getSource() != null ? request.getSource() : LessonSource.MANUAL;
+        boolean special = LessonSource.isSpecial(source);
+        Long branchId = request.getBranchId();
+        Long classGroupId = request.getClassGroupId();
+
+        if (!special && classGroupId == null) {
+            throw new BizException(ErrorCode.VALIDATION_FAILED, "非特殊课须指定班级分组");
+        }
+        if (classGroupId != null) {
+            ClassGroup group = classGroupService.requireGroup(classGroupId);
+            branchId = request.getBranchId() != null ? request.getBranchId() : group.getBranchId();
+        }
         branchAccessGuard.requireBranchAccess(branchId);
-        assertNoConflict(new LessonDraft(
+
+        LessonDraft draft = new LessonDraft(
                 null,
                 branchId,
-                request.getClassGroupId(),
+                classGroupId,
                 request.getClassRoomId(),
                 request.getTeacherId(),
                 request.getStartAt(),
-                request.getEndAt()));
+                request.getEndAt());
+        if (special) {
+            assertNoConflict(conflictService.checkSpecialAgainstBoundWindows(draft));
+        } else {
+            assertNoConflict(draft);
+        }
+
         Lesson lesson = new Lesson();
         lesson.setTenantId(TenantContext.getTenantId());
         lesson.setBranchId(branchId);
-        lesson.setClassGroupId(request.getClassGroupId());
+        lesson.setClassGroupId(classGroupId);
         lesson.setClassRoomId(request.getClassRoomId());
         lesson.setTeacherId(request.getTeacherId());
         lesson.setStartAt(request.getStartAt());
         lesson.setEndAt(request.getEndAt());
         lesson.setNote(request.getNote());
         lesson.setStatus(LessonStatus.SCHEDULED);
+        lesson.setSource(source);
+        if (special) {
+            lesson.setTeacherAvailabilityId(null);
+        }
         lessonMapper.insert(lesson);
         return lessonAssembler.toResponse(lesson);
     }
@@ -192,6 +214,9 @@ public class LessonService {
     }
 
     private String buildConflictReason(ConflictReport report) {
+        if (report.getBoundAvailability() != null) {
+            return "与已绑分组正常时段冲突";
+        }
         if (report.getTeacher() != null) {
             return "教师时间冲突";
         }
@@ -206,6 +231,10 @@ public class LessonService {
 
     private void assertNoConflict(LessonDraft draft) {
         ConflictReport report = conflictService.check(draft);
+        assertNoConflict(report);
+    }
+
+    private void assertNoConflict(ConflictReport report) {
         if (report.isHasConflict()) {
             throw new BizException(ErrorCode.CONFLICT, buildConflictReason(report));
         }

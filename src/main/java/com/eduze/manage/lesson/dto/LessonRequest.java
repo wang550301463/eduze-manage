@@ -12,7 +12,7 @@ public class LessonRequest {
     @NotNull
     private Long branchId;
 
-    @NotNull
+    /** 特殊课（补课/考级/比赛）可不挂分组。 */
     private Long classGroupId;
 
     private Long classRoomId;
@@ -26,4 +26,10 @@ public class LessonRequest {
     private LocalDateTime endAt;
 
     private String note;
+
+    /**
+     * 课次来源：1模板 2手动 3补课 4试听 5考级 6比赛。
+     * 默认 2；特殊课传 3/5/6。
+     */
+    private Integer source;
 }
