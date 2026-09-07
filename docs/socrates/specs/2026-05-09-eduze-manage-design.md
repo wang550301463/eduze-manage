@@ -8,12 +8,14 @@
 
 | 字段 | 值 |
 |---|---|
-| 文档版本 | v1.0 |
+| 文档版本 | v1.0（**v1.1 增量修订** by `2026-05-22-teacher-centric-scheduling-design.md`） |
 | 创建日期 | 2026-05-09 |
 | 状态 | Draft（待用户审阅） |
 | 文档类型 | 总体设计（Spec） |
 | 适用范围 | 整个 EduZE Manage 产品的长期愿景 + 第一期 MVP 详细设计 |
 | 后续文档 | `2026-05-09-eduze-manage-phase1-plan.md`（实施计划，由 writing-plans 阶段产出） |
+
+> **v1.1 增量修订（2026-05-22）**：本文档的 §4.3 / §4.4 / §5 / §10 / 附录 A、B 已被 [`2026-05-22-teacher-centric-scheduling-design.md`](2026-05-22-teacher-centric-scheduling-design.md) 增量覆盖，涉及"老师为核心的排课模型 + 罗恩菲尔德 5 阶段 + 778（7 元素 / 7 原则 / 8 流派）"。具体差异详见该文档 §6。
 
 > 关键设计取舍（为什么这么选 / 不这么选）请见 §附录 B。
 

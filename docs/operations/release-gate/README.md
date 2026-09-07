@@ -1,6 +1,7 @@
 # EduZE Manage 第一期 MVP 投产检查清单
 
-**设计文档：** [docs/socrates/specs/2026-06-11-release-gate-design.md](../../socrates/specs/2026-06-11-release-gate-design.md)
+**设计文档：** [docs/socrates/specs/2026-06-11-release-gate-design.md](../../socrates/specs/2026-06-11-release-gate-design.md)  
+**实施计划：** [docs/socrates/plans/2026-06-11-release-gate-plan.md](../../socrates/plans/2026-06-11-release-gate-plan.md)
 
 ## 使用说明
 

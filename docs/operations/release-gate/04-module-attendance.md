@@ -17,10 +17,10 @@
 | **前端验证** | `AttendanceWorkbenchPage` 花名册加载 |
 | **自动化证据** | `./mvnw test -Dtest=AttendanceControllerIT` |
 | **E2E 参考** | `attendance.spec.ts` |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -34,10 +34,10 @@
 | **前端验证** | `CheckInButton` 状态变「已入园」 |
 | **自动化证据** | IT + E2E |
 | **E2E 参考** | `attendance.spec.ts` |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -51,10 +51,10 @@
 | **前端验证** | 离园按钮与状态更新 |
 | **自动化证据** | 人工 + IT |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -68,10 +68,10 @@
 | **前端验证** | `StudentQrCodePanel`；localhost/HTTPS 下摄像头可用 |
 | **自动化证据** | 人工扫码或模拟 token |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -85,10 +85,10 @@
 | **前端验证** | `PickupSelectDialog` |
 | **自动化证据** | `./mvnw test -Dtest=PickupServiceIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -102,10 +102,10 @@
 | **前端验证** | `LeaveRequestFormDialog` |
 | **自动化证据** | `./mvnw test -Dtest=LeaveServiceIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -119,10 +119,10 @@
 | **前端验证** | `/attendance/leaves` + `LeaveApprovalActions` |
 | **自动化证据** | `LeaveServiceIT` + 人工 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -136,10 +136,10 @@
 | **前端验证** | — |
 | **自动化证据** | `./mvnw test -Dtest=AbsenceJobIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -153,10 +153,10 @@
 | **前端验证** | `/attendance/stats`、校长 Dashboard KPI |
 | **自动化证据** | `./mvnw test -Dtest=AttendanceStatIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -170,7 +170,7 @@
 | **前端验证** | `AttendanceStatusBadge` 显示正确 |
 | **自动化证据** | 人工走查各状态 |
 | **E2E 参考** | `attendance.spec.ts` |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |

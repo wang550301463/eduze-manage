@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS t_audit_log (
+    id BIGINT NOT NULL,
+    tenant_id BIGINT NOT NULL,
+    branch_id BIGINT NULL,
+    user_id BIGINT NULL,
+    username VARCHAR(64) NULL,
+    action VARCHAR(64) NOT NULL,
+    entity_type VARCHAR(64) NULL,
+    entity_id VARCHAR(64) NULL,
+    ip VARCHAR(64) NULL,
+    user_agent VARCHAR(256) NULL,
+    request_path VARCHAR(512) NULL,
+    status VARCHAR(16) NOT NULL,
+    error_msg VARCHAR(512) NULL,
+    extra_json JSON NULL,
+    created_at DATETIME(3) NOT NULL,
+    PRIMARY KEY (id),
+    KEY idx_audit_tenant_created (tenant_id, created_at),
+    KEY idx_audit_entity (entity_type, entity_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

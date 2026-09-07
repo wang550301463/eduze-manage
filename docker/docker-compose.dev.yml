@@ -1,0 +1,35 @@
+# 本地开发：仅启动 MySQL + Redis
+#   docker compose -f docker/docker-compose.dev.yml --env-file docker/.env.example up -d
+
+services:
+  mysql:
+    image: mysql:8.0.36
+    container_name: eduze-mysql-dev
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-eduze_dev}
+      MYSQL_DATABASE: ${DB_NAME:-eduze}
+      MYSQL_USER: ${DB_USER:-eduze}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-eduze_dev}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - mysql_dev_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: eduze-redis-dev
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_dev_data:/data
+
+volumes:
+  mysql_dev_data:
+  redis_dev_data:

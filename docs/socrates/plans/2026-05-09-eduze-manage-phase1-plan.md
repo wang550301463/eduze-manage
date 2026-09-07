@@ -14,6 +14,8 @@
 
 **对应 spec：** `docs/socrates/specs/2026-05-09-eduze-manage-design.md`（v1.0），第一期范围见 §4.1，技术栈见 §6，工程结构见 §8，数据模型见 §5，设计系统见 §7。
 
+> **v1.1 增量计划（2026-05-22）**：本计划的 D / E / F / G / I 阶段被 [`2026-05-22-teacher-centric-scheduling-plan.md`](2026-05-22-teacher-centric-scheduling-plan.md) 增量覆盖（老师为核心的排课模型 + 778 体系），新增 25 个任务（T1–T25），共 6 个 SQL 迁移 + 8 个后端 Service + 8 个 REST 端点 + 5 个前端页面 / 大组件。详见该计划 §0.1 阶段地图。
+
 ---
 
 ## 0. 实施总览

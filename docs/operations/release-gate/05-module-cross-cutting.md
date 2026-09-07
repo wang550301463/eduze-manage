@@ -17,10 +17,10 @@
 | **前端验证** | Cmd+K 搜索并跳转对应详情 |
 | **自动化证据** | `./mvnw test -Dtest=SearchServiceFullIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -34,10 +34,10 @@
 | **前端验证** | 刷新 `/students` 等深链不 404 |
 | **自动化证据** | `./mvnw test -Dtest=SpaFallbackIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -51,10 +51,10 @@
 | **前端验证** | `/` `PrincipalDashboardPage` KPI 卡加载 |
 | **自动化证据** | 人工走查 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -68,10 +68,10 @@
 | **前端验证** | 写操作后出现 Toast；可选撤销行为符合实现 |
 | **自动化证据** | 人工走查 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -85,10 +85,10 @@
 | **前端验证** | Cmd+K 搜索、`?` 帮助、`Esc` 关弹窗 |
 | **自动化证据** | 人工走查 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -102,10 +102,10 @@
 | **前端验证** | `lg` 以下汉堡菜单；学员列表移动卡片 |
 | **自动化证据** | 浏览器 DevTools 抽样 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -119,10 +119,10 @@
 | **前端验证** | 主要按钮有 `aria-label`；当前导航项 `aria-current` |
 | **自动化证据** | DevTools Accessibility 抽样 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -136,7 +136,7 @@
 | **前端验证** | 导航无上述入口 |
 | **自动化证据** | 对照 §4.1 表格 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |

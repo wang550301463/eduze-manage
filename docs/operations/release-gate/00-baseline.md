@@ -14,10 +14,10 @@
 | **前端验证** | — |
 | **自动化证据** | `./mvnw verify` 退出码 0 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
-| **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
+| **交叉 Review / 日期** | Cursor Agent (Cross-Review) / 2026-06-12 |
+| **备注 / 证据** | `cross-review-mvn-verify.log` |
 
 ---
 
@@ -31,10 +31,10 @@
 | **前端验证** | `cd web && pnpm test` 全绿 |
 | **自动化证据** | `cd web && pnpm test` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
-| **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
+| **交叉 Review / 日期** | Cursor Agent (Cross-Review) / 2026-06-12 |
+| **备注 / 证据** | 22/22 `pnpm test` |
 
 ---
 
@@ -48,10 +48,10 @@
 | **前端验证** | 6 个 spec 全绿：`login`, `students`, `student-create`, `schedule`, `attendance`, `settings` |
 | **自动化证据** | `./scripts/e2e-bootstrap.sh` 或 README 手动流程后 `cd web && pnpm e2e` |
 | **E2E 参考** | `web/e2e/*.spec.ts` |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -65,10 +65,10 @@
 | **前端验证** | — |
 | **自动化证据** | `./mvnw -DskipTests package` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -82,10 +82,10 @@
 | **前端验证** | — |
 | **自动化证据** | 空 MySQL + `./mvnw spring-boot:run` 或 Docker 首次启动 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -99,7 +99,7 @@
 | **前端验证** | 导航无上述模块入口；`PlaceholderPage` 路由不可达 |
 | **自动化证据** | 人工对照 §4.1 表格逐项确认 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |

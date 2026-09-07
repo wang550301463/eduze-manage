@@ -5,15 +5,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.eduze.manage.AbstractITContainerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
 @AutoConfigureMockMvc
-class SpaFallbackTest {
+class SpaFallbackIT extends AbstractITContainerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -26,6 +26,7 @@ class SpaFallbackTest {
     }
 
     @Test
+    @WithMockUser
     void unknownApiPath_returns404() throws Exception {
         mockMvc.perform(get("/api/__not_exist__")).andExpect(status().isNotFound());
     }

@@ -17,10 +17,10 @@
 | **前端验证** | `/courses` 列表与表单 |
 | **自动化证据** | `./mvnw test -Dtest=CourseControllerIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -34,10 +34,10 @@
 | **前端验证** | `/courses/class-groups` 成员管理 |
 | **自动化证据** | `./mvnw test -Dtest=ClassGroupControllerIT,ClassGroupMemberIT` |
 | **E2E 参考** | `schedule.spec.ts` |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -51,10 +51,10 @@
 | **前端验证** | 画室列表/表单页可访问 |
 | **自动化证据** | `./mvnw test -Dtest=ClassRoomControllerIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -68,10 +68,10 @@
 | **前端验证** | 课次详情 Sheet 新建 |
 | **自动化证据** | `LessonController` 相关 IT |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -85,10 +85,10 @@
 | **前端验证** | `BulkGenerateDialog` 后周课表可见 |
 | **自动化证据** | `./mvnw test -Dtest=LessonGenerateIT,ScheduleGeneratorIT` |
 | **E2E 参考** | `schedule.spec.ts` |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -102,10 +102,10 @@
 | **前端验证** | `RescheduleDialog` 成功后课表更新 |
 | **自动化证据** | `./mvnw test -Dtest=LessonRescheduleIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -119,10 +119,10 @@
 | **前端验证** | `CancelLessonDialog` |
 | **自动化证据** | API 或 IT 验证 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -136,10 +136,10 @@
 | **前端验证** | `ConflictWarningDialog` 弹出，可继续提交 |
 | **自动化证据** | `./mvnw test -Dtest=ConflictServiceIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -153,10 +153,10 @@
 | **前端验证** | `/schedule` 翻周、单元格点击开 Sheet；Network P95 抽样 |
 | **自动化证据** | `./mvnw test -Dtest=ScheduleServiceIT` + 人工 P95 |
 | **E2E 参考** | `schedule.spec.ts` |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -170,10 +170,10 @@
 | **前端验证** | `/teachers/availabilities` CRUD |
 | **自动化证据** | `./mvnw test -Dtest=MigrationV150IT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -187,10 +187,10 @@
 | **前端验证** | `/workbench` 权限门控；侧栏仅老师可见 |
 | **自动化证据** | 老师账号人工验证 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -204,10 +204,10 @@
 | **前端验证** | 课程维度/阶段与 seed 数据一致 |
 | **自动化证据** | `./mvnw test -Dtest=CurriculumSeedIT,MigrationV151IT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -221,7 +221,7 @@
 | **前端验证** | `LessonRosterTable` + 跳转签到入口 |
 | **自动化证据** | 人工走查 |
 | **E2E 参考** | `schedule.spec.ts` |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |

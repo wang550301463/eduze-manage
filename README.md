@@ -54,4 +54,4 @@ cd web && pnpm e2e             # Playwright 冒烟（需后端运行）
 - 设计：`docs/socrates/specs/2026-05-09-eduze-manage-design.md`
 - 实施计划：`docs/socrates/plans/2026-05-09-eduze-manage-phase1-plan.md`
 - 运维：`docs/operations/runbook.md`
-- 投产检查：`docs/operations/release-gate/`（设计见 `docs/socrates/specs/2026-06-11-release-gate-design.md`）
+- 投产检查：`docs/operations/release-gate/`（设计 `docs/socrates/specs/2026-06-11-release-gate-design.md`，计划 `docs/socrates/plans/2026-06-11-release-gate-plan.md`）

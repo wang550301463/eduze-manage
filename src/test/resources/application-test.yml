@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: eduze-manage
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    validate-on-migrate: true
+    table: flyway_schema_history
+    placeholders:
+      demoSeed: "true"
+  data:
+    redis:
+      client-type: lettuce
+      password:
+      database: 0
+      timeout: 3s
+
+eduze:
+  security:
+    login-rate-limit-enabled: false
+  tenant:
+    default-id: 1
+  jwt:
+    secret: test-jwt-secret-minimum-32-chars-long
+    access-ttl-min: 15
+    refresh-ttl-day: 7
+  storage:
+    local-root: ./storage-test

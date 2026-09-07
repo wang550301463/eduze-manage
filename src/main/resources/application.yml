@@ -9,6 +9,9 @@ spring:
   web:
     resources:
       add-mappings: false
+  flyway:
+    placeholders:
+      demoSeed: "false"
 
 management:
   endpoints:
@@ -18,3 +21,8 @@ management:
   endpoint:
     health:
       show-details: never
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}

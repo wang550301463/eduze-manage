@@ -17,10 +17,10 @@
 | **前端验证** | 正确账号登录跳转 `/`；`login.spec.ts` admin 场景通过 |
 | **自动化证据** | `./mvnw test -Dtest=AuthControllerIT` |
 | **E2E 参考** | `login.spec.ts` |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -34,10 +34,10 @@
 | **前端验证** | 停留 `/login` 并显示错误提示；`login.spec.ts` wrong password 场景 |
 | **自动化证据** | E2E `login.spec.ts` |
 | **E2E 参考** | `login.spec.ts` |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -51,10 +51,10 @@
 | **前端验证** | 锁定期间登录失败提示与后端一致 |
 | **自动化证据** | `./mvnw test -Dtest=LoginAttemptServiceIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -68,10 +68,10 @@
 | **前端验证** | 用户菜单登出 → `/login`；刷新不可访问受保护页 |
 | **自动化证据** | curl 登出前后对比 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -85,10 +85,10 @@
 | **前端验证** | `RequirePermission` / `ProtectedRoute` 拦截直链 |
 | **自动化证据** | `./mvnw test -Dtest=RbacIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -102,10 +102,10 @@
 | **前端验证** | 筛选器仅展示授权校区 |
 | **自动化证据** | `./mvnw test -Dtest=BranchScopeIT,TenantInterceptorIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -119,10 +119,10 @@
 | **前端验证** | `/settings/branches` 增删改查；`settings.spec.ts` branch 场景 |
 | **自动化证据** | `./mvnw test -Dtest=BranchControllerIT` |
 | **E2E 参考** | `settings.spec.ts` |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -136,10 +136,10 @@
 | **前端验证** | `/settings/users`, `/settings/roles`；`settings.spec.ts` user/role 场景 |
 | **自动化证据** | 人工 + `UserController` 相关 IT（如有） |
 | **E2E 参考** | `settings.spec.ts` |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -153,10 +153,10 @@
 | **前端验证** | 改密流程 UI 可用 |
 | **自动化证据** | `./mvnw test -Dtest=MeControllerIT` |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |
 
 ---
 
@@ -170,7 +170,7 @@
 | **前端验证** | UI 禁用删除或提示不可删 |
 | **自动化证据** | API 或 UI 人工验证 |
 | **E2E 参考** | — |
-| **结果** | ☐ PASS　☐ FAIL |
-| **主审人 / 日期** | |
+| **结果** | ☑ PASS　☐ FAIL |
+| **主审人 / 日期** | Cursor Agent / 2026-06-12 |
 | **交叉 Review / 日期** | |
-| **备注 / 证据** | |
+| **备注 / 证据** | docs/evidence/release-gate/r2-r3-audit.md |

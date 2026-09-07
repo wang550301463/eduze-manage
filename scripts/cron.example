@@ -1,0 +1,2 @@
+# 每天凌晨 3 点备份 MySQL（复制到 /etc/cron.d/eduze-backup 并按环境修改变量）
+0 3 * * * eduze DB_PASSWORD='***' DB_HOST=127.0.0.1 DB_NAME=eduze /opt/eduze/scripts/backup-mysql.sh >> /var/log/eduze-backup.log 2>&1

@@ -18,4 +18,13 @@ public class PageResult<T> {
     private long total;
     private long page;
     private long size;
+
+    public static <T> PageResult<T> of(List<T> records, long total, long page, long size) {
+        return PageResult.<T>builder()
+                .records(records)
+                .total(total)
+                .page(page)
+                .size(size)
+                .build();
+    }
 }
