@@ -50,7 +50,7 @@ export function ClassGroupFormDialog({ open, onOpenChange, branchId, onSaved }: 
       title="新建班级"
       footer={<Button onClick={() => saveMutation.mutate()}>保存</Button>}
     >
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div>
           <Label>班级名称</Label>
           <Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1" />

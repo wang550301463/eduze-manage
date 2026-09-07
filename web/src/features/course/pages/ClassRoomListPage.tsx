@@ -86,9 +86,9 @@ export function ClassRoomListPage(): JSX.Element {
   ];
 
   return (
-    <div className="space-y-4" data-testid="class-room-list-page">
+    <div className="space-y-6" data-testid="class-room-list-page">
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-xl font-semibold">画室</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">画室</h1>
         <Button
           onClick={() => {
             setEditing(null);
@@ -100,18 +100,20 @@ export function ClassRoomListPage(): JSX.Element {
           新建画室
         </Button>
       </div>
-      <DataTable
-        columns={columns}
-        data={data?.items ?? []}
-        loading={isLoading}
-        rowKey={(r) => String(r.id)}
-        pageState={{
-          page,
-          pageSize: 20,
-          total: data?.total ?? 0,
-          onChange: ({ page: p }) => setPage(p),
-        }}
-      />
+      <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <DataTable
+          columns={columns}
+          data={data?.items ?? []}
+          loading={isLoading}
+          rowKey={(r) => String(r.id)}
+          pageState={{
+            page,
+            pageSize: 20,
+            total: data?.total ?? 0,
+            onChange: ({ page: p }) => setPage(p),
+          }}
+        />
+      </div>
       <DialogFrame
         open={open}
         onOpenChange={setOpen}

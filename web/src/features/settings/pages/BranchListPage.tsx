@@ -115,17 +115,19 @@ export function BranchListPage(): JSX.Element {
   ];
 
   return (
-    <div className="space-y-4" data-testid="branch-list-page">
+    <div className="space-y-6" data-testid="branch-list-page">
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-xl font-semibold">校区</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">校区</h1>
         <Button onClick={openCreate}>新建校区</Button>
       </div>
-      <DataTable
-        columns={columns}
-        data={data ?? []}
-        loading={isLoading}
-        rowKey={(r) => String(r.id)}
-      />
+      <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <DataTable
+          columns={columns}
+          data={data ?? []}
+          loading={isLoading}
+          rowKey={(r) => String(r.id)}
+        />
+      </div>
       <DialogFrame
         open={dialogOpen}
         onOpenChange={setDialogOpen}

@@ -161,9 +161,9 @@ export function UserListPage(): JSX.Element {
   ];
 
   return (
-    <div className="space-y-4" data-testid="user-list-page">
+    <div className="space-y-6" data-testid="user-list-page">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="font-serif text-xl font-semibold">账号</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">账号</h1>
         <div className="flex flex-wrap gap-2">
           <Input
             placeholder="搜索登录名 / 姓名"
@@ -177,18 +177,20 @@ export function UserListPage(): JSX.Element {
           <Button onClick={openCreate}>新建账号</Button>
         </div>
       </div>
-      <DataTable
-        columns={columns}
-        data={data?.items ?? []}
-        loading={isLoading}
-        rowKey={(r) => String(r.id)}
-        pageState={{
-          page,
-          pageSize: 20,
-          total: data?.total ?? 0,
-          onChange: ({ page: p }) => setPage(p),
-        }}
-      />
+      <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <DataTable
+          columns={columns}
+          data={data?.items ?? []}
+          loading={isLoading}
+          rowKey={(r) => String(r.id)}
+          pageState={{
+            page,
+            pageSize: 20,
+            total: data?.total ?? 0,
+            onChange: ({ page: p }) => setPage(p),
+          }}
+        />
+      </div>
       <DialogFrame
         open={dialogOpen}
         onOpenChange={setDialogOpen}

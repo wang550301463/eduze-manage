@@ -35,7 +35,7 @@ export function WeeklyGrid({ schedule, onLessonClick }: Props): JSX.Element {
   return (
     <div className="hidden overflow-x-auto md:block">
       <div
-        className="relative min-w-[900px] grid gap-px rounded-lg border border-border bg-border"
+        className="relative min-w-[900px] grid gap-px bg-border"
         style={{
           gridTemplateColumns: '80px repeat(7, 1fr)',
           gridTemplateRows: `repeat(${ROWS}, 32px)`,

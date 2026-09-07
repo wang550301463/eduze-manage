@@ -79,27 +79,29 @@ export function ClassGroupListPage(): JSX.Element {
   const overCapacity = group ? group.currentCount > group.capacity : false;
 
   return (
-    <div className="space-y-4" data-testid="class-group-list-page">
+    <div className="space-y-6" data-testid="class-group-list-page">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="font-serif text-xl font-semibold">分组标签（旧称：班级）</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">分组标签（旧称：班级）</h1>
         <Button onClick={() => setFormOpen(true)}>新建分组</Button>
       </div>
-      <div className="rounded-md border border-warning/40 bg-warning/10 p-3 text-sm text-warning">
+      <div className="rounded-xl border border-warning/40 bg-warning/10 p-3 text-sm text-warning">
         班级已降级为「分组标签」，用于花名册分类。排课请前往「按老师周课表」基于老师可用时段配置。
       </div>
-      <DataTable
-        columns={columns}
-        data={data?.items ?? []}
-        loading={isLoading}
-        rowKey={(r) => String(r.id)}
-        onRowClick={(row) => setDetailId(String(row.id))}
-        pageState={{
-          page,
-          pageSize: 20,
-          total: data?.total ?? 0,
-          onChange: ({ page: p }) => setPage(p),
-        }}
-      />
+      <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <DataTable
+          columns={columns}
+          data={data?.items ?? []}
+          loading={isLoading}
+          rowKey={(r) => String(r.id)}
+          onRowClick={(row) => setDetailId(String(row.id))}
+          pageState={{
+            page,
+            pageSize: 20,
+            total: data?.total ?? 0,
+            onChange: ({ page: p }) => setPage(p),
+          }}
+        />
+      </div>
       <ClassGroupFormDialog
         open={formOpen}
         onOpenChange={setFormOpen}
