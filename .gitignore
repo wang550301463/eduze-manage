@@ -23,6 +23,7 @@ Thumbs.db
 # Frontend (web/) build artifacts
 web/node_modules/
 web/dist/
+*.tsbuildinfo
 
 # Spring Boot static resources are produced by Maven from web/dist; never commit
 src/main/resources/static/**
