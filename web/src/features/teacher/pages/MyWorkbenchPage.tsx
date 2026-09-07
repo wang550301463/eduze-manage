@@ -24,35 +24,35 @@ export function MyWorkbenchPage(): JSX.Element {
   return (
     <div className="space-y-4 pb-24" data-testid="my-workbench">
       <div className="flex items-center justify-between">
-        <h1 className="font-serif text-xl font-semibold">
+        <h1 className="text-2xl font-semibold tracking-tight">
           {user?.name}，下午好
         </h1>
         <span className="text-sm text-muted-fg">老师工作台</span>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-xl border border-border bg-white p-4">
           <div className="text-2xl font-semibold">{lessons.length}</div>
           <div className="text-sm text-muted-fg">📅 本周课次</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-xl border border-border bg-white p-4">
           <div className="text-2xl font-semibold">-</div>
           <div className="text-sm text-muted-fg">👶 主带学员</div>
         </div>
-        <div className="rounded-lg border border-border bg-card p-4">
+        <div className="rounded-xl border border-border bg-white p-4">
           <div className="text-2xl font-semibold">-</div>
           <div className="text-sm text-muted-fg">📝 待批请假</div>
         </div>
         <Link
           to="/teachers/availabilities"
-          className="rounded-lg border border-border bg-card p-4 hover:bg-muted"
+          className="rounded-xl border border-border bg-white p-4 hover:bg-muted"
         >
           <div className="text-lg font-semibold">→</div>
           <div className="text-sm text-muted-fg">🕘 维护可用时段</div>
         </Link>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-4">
+      <div className="rounded-xl border border-border bg-white p-4">
         <h2 className="mb-3 text-sm font-semibold">本周课表</h2>
         {isLoading ? (
           <p className="text-sm text-muted-fg">加载中...</p>

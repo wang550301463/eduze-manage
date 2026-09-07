@@ -137,14 +137,16 @@ export function StudentDetailSheet({
                   调班
                 </Button>
               </div>
-              <nav className="flex shrink-0 gap-1 overflow-x-auto px-4 pt-2 text-sm">
+              <nav className="mx-4 mt-2 flex shrink-0 gap-1 overflow-x-auto rounded-lg bg-muted p-1 text-sm">
                 {TABS.map((t) => (
                   <button
                     key={t}
                     type="button"
                     className={cn(
-                      'rounded-md px-2 py-1',
-                      tab === t ? 'bg-primary text-primary-fg' : 'text-muted-fg hover:bg-muted',
+                      'rounded-md px-3 py-1.5 font-medium transition-colors',
+                      tab === t
+                        ? 'bg-white text-foreground shadow-sm'
+                        : 'text-muted-fg hover:text-foreground',
                     )}
                     onClick={() => setTab(t)}
                   >
