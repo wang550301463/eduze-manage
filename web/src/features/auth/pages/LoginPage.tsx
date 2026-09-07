@@ -96,7 +96,7 @@ export function LoginPage(): JSX.Element {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-6">
-      <div className="w-full max-w-sm space-y-6 rounded-xl border border-border bg-background p-8 shadow-lg">
+      <div className="w-full max-w-sm space-y-6 rounded-xl p-8 shadow-sm border border-border bg-card">
         <div className="text-center">
           <BrandLogo />
           <h1 className="mt-3 font-serif text-2xl font-bold text-primary">EduZE Manage</h1>
