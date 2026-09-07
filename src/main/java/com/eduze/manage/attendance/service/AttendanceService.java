@@ -23,6 +23,7 @@ import com.eduze.manage.student.domain.Guardian;
 import com.eduze.manage.student.domain.Student;
 import com.eduze.manage.student.mapper.GuardianMapper;
 import com.eduze.manage.student.mapper.StudentMapper;
+import com.eduze.manage.student.service.StudentLessonHourLedgerService;
 import com.eduze.manage.tenant.TenantContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,6 +51,7 @@ public class AttendanceService {
     private final JdbcTemplate jdbcTemplate;
     private final AttendanceSupport attendanceSupport;
     private final PickupService pickupService;
+    private final StudentLessonHourLedgerService lessonHourLedgerService;
 
     public TodayRosterResponse todayRoster(Long branchId, String period, LocalDate date) {
         LocalDate targetDate = date != null ? date : LocalDate.now();
@@ -145,6 +147,7 @@ public class AttendanceService {
 
         pickupService.recordPickupInternal(
                 attendance, "in", guardianId, null, null, LocalDateTime.now());
+        lessonHourLedgerService.appendAttend(student, lesson, null);
         return toResponse(attendance, student, lesson);
     }
 

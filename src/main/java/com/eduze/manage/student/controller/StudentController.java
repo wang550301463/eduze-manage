@@ -8,10 +8,12 @@ import com.eduze.manage.student.dto.AssignMentorRequest;
 import com.eduze.manage.student.dto.GuardianResponse;
 import com.eduze.manage.student.dto.GuardianSummaryResponse;
 import com.eduze.manage.student.dto.GuardianUpsertRequest;
+import com.eduze.manage.student.dto.LessonHourAdjustRequest;
 import com.eduze.manage.student.dto.LinkGuardianRequest;
 import com.eduze.manage.student.dto.MentorHistoryResponse;
 import com.eduze.manage.student.dto.StageAssessmentRequest;
 import com.eduze.manage.student.dto.StageAssessmentResponse;
+import com.eduze.manage.student.dto.StudentLessonHourLedgerResponse;
 import com.eduze.manage.student.dto.StudentRequest;
 import com.eduze.manage.student.dto.StudentResponse;
 import com.eduze.manage.student.dto.StudentStatusRequest;
@@ -19,6 +21,7 @@ import com.eduze.manage.student.dto.StudentUpdateRequest;
 import com.eduze.manage.student.service.GuardianService;
 import com.eduze.manage.student.service.StageAssessmentService;
 import com.eduze.manage.student.service.StudentGuardianService;
+import com.eduze.manage.student.service.StudentLessonHourLedgerService;
 import com.eduze.manage.student.service.StudentMentorService;
 import com.eduze.manage.student.service.StudentService;
 import jakarta.validation.Valid;
@@ -46,6 +49,7 @@ public class StudentController {
     private final GuardianService guardianService;
     private final StudentMentorService studentMentorService;
     private final StageAssessmentService stageAssessmentService;
+    private final StudentLessonHourLedgerService lessonHourLedgerService;
 
     @GetMapping
     @PreAuthorize("hasAuthority('student:read')")
@@ -151,5 +155,18 @@ public class StudentController {
     @PreAuthorize("hasAuthority('student:read')")
     public ApiResponse<List<StageAssessmentResponse>> listAssessments(@PathVariable Long id) {
         return ApiResponse.ok(stageAssessmentService.list(id));
+    }
+
+    @GetMapping("/{id}/lesson-hour-ledger")
+    @PreAuthorize("hasAuthority('student:read')")
+    public ApiResponse<List<StudentLessonHourLedgerResponse>> listLessonHourLedger(@PathVariable Long id) {
+        return ApiResponse.ok(lessonHourLedgerService.listByStudent(id));
+    }
+
+    @PostMapping("/{id}/lesson-hour-ledger/adjust")
+    @PreAuthorize("hasAuthority('student:hour_adjust')")
+    public ApiResponse<StudentLessonHourLedgerResponse> adjustLessonHours(
+            @PathVariable Long id, @Valid @RequestBody LessonHourAdjustRequest request) {
+        return ApiResponse.ok(lessonHourLedgerService.adjust(id, request));
     }
 }
