@@ -15,7 +15,7 @@ export function Header({ onOpenSearch, onOpenMobileNav }: HeaderProps): JSX.Elem
   const breadcrumb = getNavLabel(pathname);
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur lg:grid lg:grid-cols-[1fr_auto]">
+    <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur lg:grid lg:grid-cols-[1fr_auto]">
       <div className="flex min-w-0 flex-1 items-center gap-3">
         <Button
           type="button"

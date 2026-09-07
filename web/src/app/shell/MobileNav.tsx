@@ -23,10 +23,10 @@ export function MobileNav(): JSX.Element {
                 onClick={() => setMobileNavOpen(false)}
                 className={({ isActive }) =>
                   cn(
-                    'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm',
+                    'flex items-center gap-3 rounded-[10px] px-3 py-2 text-sm transition-colors',
                     isActive
-                      ? 'bg-primary/10 font-medium text-primary'
-                      : 'text-muted-fg hover:bg-muted',
+                      ? 'bg-primary font-medium text-primary-fg'
+                      : 'text-foreground/80 hover:bg-muted',
                   )
                 }
               >
