@@ -36,6 +36,16 @@ export const settingsNavItems: NavItem[] = [
 
 export const allNavItems: NavItem[] = [...mainNavItems, ...settingsNavItems];
 
+/**
+ * 是否对 NavLink 启用 end 匹配。
+ * 当存在更长的同前缀导航项时（如 /attendance vs /attendance/leaves），
+ * 必须 end，否则父级与子级会同时高亮。
+ */
+export function navItemEnd(path: string, items: NavItem[] = allNavItems): boolean {
+  if (path === '/') return true;
+  return items.some((other) => other.path !== path && other.path.startsWith(`${path}/`));
+}
+
 /** 按当前路径解析面包屑标题（最长前缀匹配） */
 export function getNavLabel(pathname: string): string {
   const sorted = [...allNavItems].sort((a, b) => b.path.length - a.path.length);

@@ -31,7 +31,8 @@ export function ClassGroupFormDialog({ open, onOpenChange, branchId, onSaved }: 
       createClassGroup({
         branchId,
         name,
-        courseId: Number(courseId),
+        // 雪花 Long 必须保持字符串，Number() 会丢精度导致「课程不存在」
+        courseId: courseId || null,
         capacity: Number(capacity),
       }),
     onSuccess: () => {

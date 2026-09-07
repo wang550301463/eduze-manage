@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import { RequirePermission } from '@/components/auth/RequirePermission';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/Sheet';
-import { allNavItems } from '@/app/shell/nav-config';
+import { allNavItems, navItemEnd } from '@/app/shell/nav-config';
 import { useShell } from '@/app/shell/shell-context';
 import { cn } from '@/lib/cn';
 
@@ -19,7 +19,7 @@ export function MobileNav(): JSX.Element {
             <RequirePermission key={item.path} perm={item.permission}>
               <NavLink
                 to={item.path}
-                end={item.path === '/'}
+                end={navItemEnd(item.path)}
                 onClick={() => setMobileNavOpen(false)}
                 className={({ isActive }) =>
                   cn(

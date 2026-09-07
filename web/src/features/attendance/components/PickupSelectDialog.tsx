@@ -12,7 +12,7 @@ type Props = {
   item: RosterItem | null;
   mode: 'in' | 'out';
   onClose: () => void;
-  onConfirm: (guardianId: number | undefined) => void;
+  onConfirm: (guardianId: string | undefined) => void;
 };
 
 export function PickupSelectDialog({ open, item, mode, onClose, onConfirm }: Props): JSX.Element {
@@ -37,7 +37,7 @@ export function PickupSelectDialog({ open, item, mode, onClose, onConfirm }: Pro
             取消
           </Button>
           <Button
-            onClick={() => onConfirm(guardianId ? Number(guardianId) : undefined)}
+            onClick={() => onConfirm(guardianId || undefined)}
             disabled={isLoading}
           >
             确认

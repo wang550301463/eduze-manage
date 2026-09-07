@@ -8,7 +8,7 @@ import { LessonRosterTable } from '@/features/lesson/components/LessonRosterTabl
 import { RescheduleDialog } from '@/features/lesson/components/RescheduleDialog';
 
 type Props = {
-  lessonId: number | null;
+  lessonId: string | number | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onUpdated: () => void;

@@ -3,12 +3,12 @@ export type DayPeriod = 'morning' | 'afternoon' | 'evening';
 export type RosterStatus = 'not_arrived' | 'checked_in' | 'checked_out' | 'absent' | 'leave';
 
 export type RosterItem = {
-  lessonId: number;
-  studentId: number;
+  lessonId: string | number;
+  studentId: string | number;
   studentName: string;
   classGroupName: string;
   lessonStartAt: string;
-  attendanceId: number | null;
+  attendanceId: string | number | null;
   status: number | null;
   statusLabel: string;
   checkInAt: string | null;
@@ -47,17 +47,17 @@ export type GuardianSummary = {
 };
 
 export type LeaveRecord = {
-  id: number;
-  branchId: number;
-  studentId: number;
+  id: string | number;
+  branchId: string | number;
+  studentId: string | number;
   studentName: string;
-  lessonId: number | null;
+  lessonId: string | number | null;
   leaveStartDate: string;
   leaveEndDate: string;
   reason: string | null;
   status: number;
   statusLabel: string;
-  approvedBy: number | null;
+  approvedBy: string | number | null;
   approvedAt: string | null;
   createdAt: string;
 };

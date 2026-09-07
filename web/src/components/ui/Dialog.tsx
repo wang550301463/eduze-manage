@@ -109,17 +109,21 @@ export function DialogFrame({
   children,
   footer,
 }: DialogFrameProps): JSX.Element {
+  // 受控模式下 open=false 时不挂载 Content，避免关闭后无障碍树仍残留对话框
+  const showContent = trigger != null || open !== false;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          {description ? <DialogDescription>{description}</DialogDescription> : null}
-        </DialogHeader>
-        {children}
-        {footer ? <DialogFooter>{footer}</DialogFooter> : null}
-      </DialogContent>
+      {showContent ? (
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+            {description ? <DialogDescription>{description}</DialogDescription> : null}
+          </DialogHeader>
+          {children}
+          {footer ? <DialogFooter>{footer}</DialogFooter> : null}
+        </DialogContent>
+      ) : null}
     </Dialog>
   );
 }

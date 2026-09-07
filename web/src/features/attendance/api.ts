@@ -11,7 +11,7 @@ import type {
 } from '@/features/attendance/types';
 
 export async function fetchTodayRoster(params: {
-  branchId: number;
+  branchId: number | string;
   period: DayPeriod;
   date?: string;
 }): Promise<TodayRoster> {
@@ -20,10 +20,10 @@ export async function fetchTodayRoster(params: {
 }
 
 export async function checkIn(body: {
-  lessonId?: number;
-  studentId?: number;
+  lessonId?: number | string;
+  studentId?: number | string;
   method: 'manual' | 'qr';
-  guardianId?: number;
+  guardianId?: number | string;
   qrCode?: string;
 }): Promise<AttendanceRecord> {
   const { data } = await apiClient.post<ApiResponse<AttendanceRecord>>('/attendance/check-in', body);
@@ -31,8 +31,8 @@ export async function checkIn(body: {
 }
 
 export async function checkOut(body: {
-  attendanceId: number;
-  guardianId?: number;
+  attendanceId: number | string;
+  guardianId?: number | string;
   isAbnormal?: boolean;
   abnormalNote?: string;
 }): Promise<AttendanceRecord> {
@@ -62,8 +62,8 @@ export async function fetchLeaves(params?: {
 }
 
 export async function createLeave(body: {
-  studentId: number;
-  lessonId?: number;
+  studentId: number | string;
+  lessonId?: number | string;
   leaveStartDate: string;
   leaveEndDate: string;
   reason?: string;
@@ -72,13 +72,13 @@ export async function createLeave(body: {
   return data.data;
 }
 
-export async function approveLeave(id: number): Promise<LeaveRecord> {
-  const { data } = await apiClient.post<ApiResponse<LeaveRecord>>(`/leaves/${id}/approve`);
+export async function approveLeave(id: number | string): Promise<LeaveRecord> {
+  const { data } = await apiClient.post<ApiResponse<LeaveRecord>>(`/leaves/${String(id)}/approve`);
   return data.data;
 }
 
-export async function rejectLeave(id: number): Promise<LeaveRecord> {
-  const { data } = await apiClient.post<ApiResponse<LeaveRecord>>(`/leaves/${id}/reject`);
+export async function rejectLeave(id: number | string): Promise<LeaveRecord> {
+  const { data } = await apiClient.post<ApiResponse<LeaveRecord>>(`/leaves/${String(id)}/reject`);
   return data.data;
 }
 

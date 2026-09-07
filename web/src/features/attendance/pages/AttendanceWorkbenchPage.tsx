@@ -31,7 +31,7 @@ export function AttendanceWorkbenchPage(): JSX.Element {
     queryKey: ['attendance-today', branchId, period, date?.toISOString().slice(0, 10)],
     queryFn: () =>
       fetchTodayRoster({
-        branchId: Number(branchId),
+        branchId,
         period,
         date: date ? format(date, 'yyyy-MM-dd') : undefined,
       }),
@@ -41,7 +41,7 @@ export function AttendanceWorkbenchPage(): JSX.Element {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['attendance-today'] });
 
   const checkInMutation = useMutation({
-    mutationFn: (args: { item: RosterItem; guardianId?: number }) =>
+    mutationFn: (args: { item: RosterItem; guardianId?: number | string }) =>
       checkIn({
         lessonId: args.item.lessonId,
         studentId: args.item.studentId,
@@ -56,7 +56,7 @@ export function AttendanceWorkbenchPage(): JSX.Element {
   });
 
   const checkOutMutation = useMutation({
-    mutationFn: (args: { item: RosterItem; guardianId?: number }) =>
+    mutationFn: (args: { item: RosterItem; guardianId?: number | string }) =>
       checkOut({
         attendanceId: args.item.attendanceId!,
         guardianId: args.guardianId,

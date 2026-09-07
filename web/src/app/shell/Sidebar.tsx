@@ -2,7 +2,7 @@ import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { NavLink } from 'react-router-dom';
 import { RequirePermission } from '@/components/auth/RequirePermission';
 import { Button } from '@/components/ui/Button';
-import { mainNavItems, settingsNavItems } from '@/app/shell/nav-config';
+import { mainNavItems, navItemEnd, settingsNavItems } from '@/app/shell/nav-config';
 import { useAuthStore } from '@/features/auth/store';
 import { cn } from '@/lib/cn';
 
@@ -41,7 +41,7 @@ export function Sidebar({ className }: SidebarProps): JSX.Element {
           <RequirePermission key={item.path} perm={item.permission}>
             <NavLink
               to={item.path}
-              end={item.path === '/'}
+              end={navItemEnd(item.path)}
               className={({ isActive }) =>
                 cn(
                   'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
@@ -68,6 +68,7 @@ export function Sidebar({ className }: SidebarProps): JSX.Element {
           <RequirePermission key={item.path} perm={item.permission}>
             <NavLink
               to={item.path}
+              end={navItemEnd(item.path)}
               className={({ isActive }) =>
                 cn(
                   'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',

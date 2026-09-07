@@ -15,12 +15,12 @@ export async function fetchWeekSchedule(branchId: number, weekStart: string): Pr
   return data.data;
 }
 
-export async function fetchLesson(id: number): Promise<Lesson> {
+export async function fetchLesson(id: number | string): Promise<Lesson> {
   const { data } = await apiClient.get<ApiResponse<Lesson>>(`/lessons/${id}`);
   return data.data;
 }
 
-export async function fetchLessonLogs(id: number): Promise<LessonChangeLog[]> {
+export async function fetchLessonLogs(id: number | string): Promise<LessonChangeLog[]> {
   const { data } = await apiClient.get<ApiResponse<LessonChangeLog[]>>(`/lessons/${id}/change-logs`);
   return data.data;
 }

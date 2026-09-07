@@ -97,7 +97,7 @@ export function SimpleSelect({
   'aria-label': ariaLabel,
 }: SimpleSelectProps): JSX.Element {
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select value={value || undefined} onValueChange={onValueChange}>
       <SelectTrigger className={className} aria-label={ariaLabel}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>

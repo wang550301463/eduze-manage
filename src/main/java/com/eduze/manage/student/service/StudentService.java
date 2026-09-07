@@ -61,12 +61,6 @@ public class StudentService {
             boolean maskPhone,
             int page,
             int size) {
-        if (classGroupId != null) {
-            Page<StudentResponse> empty = new Page<>(page, size, 0);
-            empty.setRecords(List.of());
-            return empty;
-        }
-
         LambdaQueryWrapper<Student> wrapper = Wrappers.<Student>lambdaQuery()
                 .eq(Student::getTenantId, TenantContext.getTenantId())
                 .orderByDesc(Student::getId);
@@ -80,6 +74,15 @@ public class StudentService {
         }
         if (status != null) {
             wrapper.eq(Student::getStatus, status);
+        }
+        if (classGroupId != null) {
+            List<Long> ids = findStudentIdsByClassGroup(classGroupId);
+            if (ids.isEmpty()) {
+                Page<StudentResponse> empty = new Page<>(page, size, 0);
+                empty.setRecords(List.of());
+                return empty;
+            }
+            wrapper.in(Student::getId, ids);
         }
         if (pkgRemainingMax != null) {
             List<Long> ids = findStudentIdsByMaxRemaining(pkgRemainingMax);
@@ -95,10 +98,12 @@ public class StudentService {
         Map<Long, String> branchNames = loadBranchNames(result.getRecords());
         Map<Long, Integer> balances = packageBalanceHelper.sumRemaining(
                 result.getRecords().stream().map(Student::getId).toList());
+        Map<Long, List<StudentResponse.ClassGroupRef>> classGroups =
+                loadClassGroups(result.getRecords().stream().map(Student::getId).toList());
 
         Page<StudentResponse> mapped = new Page<>(result.getCurrent(), result.getSize(), result.getTotal());
         mapped.setRecords(result.getRecords().stream()
-                .map(s -> toResponse(s, branchNames, balances, maskPhone))
+                .map(s -> toResponse(s, branchNames, balances, classGroups, maskPhone))
                 .toList());
         return mapped;
     }
@@ -108,7 +113,8 @@ public class StudentService {
         branchAccessGuard.requireBranchAccess(student.getBranchId());
         Map<Long, String> branchNames = loadBranchNames(List.of(student));
         Map<Long, Integer> balances = packageBalanceHelper.sumRemaining(List.of(id));
-        return toResponse(student, branchNames, balances, maskPhone);
+        Map<Long, List<StudentResponse.ClassGroupRef>> classGroups = loadClassGroups(List.of(id));
+        return toResponse(student, branchNames, balances, classGroups, maskPhone);
     }
 
     @Transactional
@@ -210,6 +216,48 @@ public class StudentService {
                 maxRemaining);
     }
 
+    private List<Long> findStudentIdsByClassGroup(Long classGroupId) {
+        return jdbcTemplate.queryForList(
+                """
+                SELECT student_id FROM t_student_class_group
+                WHERE tenant_id = ? AND class_group_id = ? AND deleted_at = 0 AND left_at IS NULL
+                """,
+                Long.class,
+                TenantContext.getTenantId(),
+                classGroupId);
+    }
+
+    private Map<Long, List<StudentResponse.ClassGroupRef>> loadClassGroups(List<Long> studentIds) {
+        if (studentIds == null || studentIds.isEmpty()) {
+            return Map.of();
+        }
+        String placeholders = studentIds.stream().map(id -> "?").collect(Collectors.joining(","));
+        List<Object> args = new java.util.ArrayList<>();
+        args.add(TenantContext.getTenantId());
+        args.addAll(studentIds);
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(
+                """
+                SELECT scg.student_id, cg.id AS class_group_id, cg.name AS class_group_name
+                FROM t_student_class_group scg
+                INNER JOIN t_class_group cg ON cg.id = scg.class_group_id AND cg.deleted_at = 0
+                WHERE scg.tenant_id = ? AND scg.deleted_at = 0 AND scg.left_at IS NULL
+                  AND scg.student_id IN (%s)
+                ORDER BY cg.name
+                """
+                        .formatted(placeholders),
+                args.toArray());
+        Map<Long, List<StudentResponse.ClassGroupRef>> result = new java.util.HashMap<>();
+        for (Map<String, Object> row : rows) {
+            Long studentId = ((Number) row.get("student_id")).longValue();
+            result.computeIfAbsent(studentId, k -> new java.util.ArrayList<>())
+                    .add(StudentResponse.ClassGroupRef.builder()
+                            .id(((Number) row.get("class_group_id")).longValue())
+                            .name((String) row.get("class_group_name"))
+                            .build());
+        }
+        return result;
+    }
+
     private Map<Long, String> loadBranchNames(List<Student> students) {
         Set<Long> branchIds =
                 students.stream().map(Student::getBranchId).collect(Collectors.toSet());
@@ -259,6 +307,7 @@ public class StudentService {
             Student student,
             Map<Long, String> branchNames,
             Map<Long, Integer> balances,
+            Map<Long, List<StudentResponse.ClassGroupRef>> classGroups,
             boolean maskPhone) {
         int totalRemaining = balances.getOrDefault(student.getId(), 0);
         String phone = student.getEmergencyPhone();
@@ -302,7 +351,7 @@ public class StudentService {
                 .currentStageId(student.getCurrentStageId())
                 .currentStageCode(stageCode)
                 .currentStageName(stageName)
-                .classGroups(Collections.emptyList())
+                .classGroups(classGroups.getOrDefault(student.getId(), Collections.emptyList()))
                 .totalRemaining(totalRemaining)
                 .alertLow(packageBalanceHelper.isAlertLow(totalRemaining))
                 .build();

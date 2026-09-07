@@ -15,7 +15,7 @@ export function WeeklySchedulePage(): JSX.Element {
   const [weekStart, setWeekStart] = useState(() =>
     startOfWeek(new Date(), { weekStartsOn: 1 }),
   );
-  const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const weekStartStr = format(weekStart, 'yyyy-MM-dd');
@@ -28,7 +28,7 @@ export function WeeklySchedulePage(): JSX.Element {
   useEffect(() => {
     const openLessonId = searchParams.get('openLessonId');
     if (openLessonId) {
-      setSelectedLessonId(Number(openLessonId));
+      setSelectedLessonId(openLessonId);
       setSheetOpen(true);
     }
     const date = searchParams.get('date');
@@ -38,7 +38,7 @@ export function WeeklySchedulePage(): JSX.Element {
   }, [searchParams]);
 
   const openLesson = (lesson: ScheduleLessonItem) => {
-    setSelectedLessonId(lesson.id);
+    setSelectedLessonId(String(lesson.id));
     setSheetOpen(true);
   };
 

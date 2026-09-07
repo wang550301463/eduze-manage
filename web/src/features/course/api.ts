@@ -37,7 +37,7 @@ export async function listClassGroups(
   return getPage('/class-groups', { page, size, branchId, courseId });
 }
 
-export async function getClassGroup(id: number): Promise<ClassGroup> {
+export async function getClassGroup(id: number | string): Promise<ClassGroup> {
   const { data } = await apiClient.get<ApiResponse<ClassGroup>>(`/class-groups/${id}`);
   return data.data;
 }
@@ -47,27 +47,27 @@ export async function createClassGroup(body: Record<string, unknown>): Promise<C
   return data.data;
 }
 
-export async function updateClassGroup(id: number, body: Record<string, unknown>): Promise<ClassGroup> {
+export async function updateClassGroup(id: number | string, body: Record<string, unknown>): Promise<ClassGroup> {
   const { data } = await apiClient.put<ApiResponse<ClassGroup>>(`/class-groups/${id}`, body);
   return data.data;
 }
 
-export async function deleteClassGroup(id: number): Promise<void> {
+export async function deleteClassGroup(id: number | string): Promise<void> {
   await apiClient.delete(`/class-groups/${id}`);
 }
 
-export async function listClassMembers(classGroupId: number): Promise<ClassMember[]> {
+export async function listClassMembers(classGroupId: number | string): Promise<ClassMember[]> {
   const { data } = await apiClient.get<ApiResponse<ClassMember[]>>(
     `/class-groups/${classGroupId}/members`,
   );
   return data.data;
 }
 
-export async function addClassMembers(classGroupId: number, studentIds: number[]): Promise<void> {
+export async function addClassMembers(classGroupId: number | string, studentIds: Array<number | string>): Promise<void> {
   await apiClient.post(`/class-groups/${classGroupId}/members`, { studentIds });
 }
 
-export async function removeClassMember(classGroupId: number, studentId: number): Promise<void> {
+export async function removeClassMember(classGroupId: number | string, studentId: number | string): Promise<void> {
   await apiClient.delete(`/class-groups/${classGroupId}/members/${studentId}`);
 }
 

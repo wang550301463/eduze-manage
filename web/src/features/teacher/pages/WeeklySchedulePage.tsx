@@ -24,17 +24,24 @@ function fmtTime(min: number): string {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 }
 
+function toLocalISODate(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function currentMondayISO(): string {
   const d = new Date();
   const dow = d.getDay() === 0 ? 7 : d.getDay();
   d.setDate(d.getDate() - (dow - 1));
-  return d.toISOString().slice(0, 10);
+  return toLocalISODate(d);
 }
 
 function addDays(iso: string, days: number): string {
-  const d = new Date(iso);
+  const d = new Date(`${iso}T12:00:00`);
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  return toLocalISODate(d);
 }
 
 export function WeeklySchedulePage(): JSX.Element {

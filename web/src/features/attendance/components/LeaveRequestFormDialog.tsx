@@ -28,7 +28,8 @@ export function LeaveRequestFormDialog({ open, onClose, onDone }: Props): JSX.El
     setLoading(true);
     try {
       await createLeave({
-        studentId: Number(studentId),
+        // 雪花 ID 保持字符串，避免 Number() 精度丢失
+        studentId: studentId,
         leaveStartDate: start,
         leaveEndDate: end,
         reason: reason || undefined,

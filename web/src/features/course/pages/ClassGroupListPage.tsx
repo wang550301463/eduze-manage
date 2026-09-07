@@ -23,7 +23,7 @@ export function ClassGroupListPage(): JSX.Element {
   const openId = searchParams.get('openId');
   const [page, setPage] = useState(1);
   const [formOpen, setFormOpen] = useState(false);
-  const [detailId, setDetailId] = useState<number | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['class-groups', page, branchId],
@@ -43,11 +43,11 @@ export function ClassGroupListPage(): JSX.Element {
   });
 
   useEffect(() => {
-    if (openId) setDetailId(Number(openId));
+    if (openId) setDetailId(openId);
   }, [openId]);
 
   const removeMutation = useMutation({
-    mutationFn: ({ groupId, studentId }: { groupId: number; studentId: number }) =>
+    mutationFn: ({ groupId, studentId }: { groupId: string | number; studentId: string | number }) =>
       removeClassMember(groupId, studentId),
     onSuccess: () => {
       toast.success('已转出');
@@ -92,7 +92,7 @@ export function ClassGroupListPage(): JSX.Element {
         data={data?.items ?? []}
         loading={isLoading}
         rowKey={(r) => String(r.id)}
-        onRowClick={(row) => setDetailId(row.id)}
+        onRowClick={(row) => setDetailId(String(row.id))}
         pageState={{
           page,
           pageSize: 20,

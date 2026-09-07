@@ -39,4 +39,7 @@ backups/
 
 web/test-results/
 web/playwright-report/
+
+# Socrates brainstorm companion sessions
+.socrates/
 *.sql.gz

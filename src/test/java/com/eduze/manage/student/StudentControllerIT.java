@@ -190,6 +190,52 @@ class StudentControllerIT extends AbstractITContainerTest {
                 .andExpect(jsonPath("$.data.status").value(2));
     }
 
+    @Test
+    void list_includesActiveClassGroups() throws Exception {
+        String created = mockMvc.perform(post("/api/students")
+                        .with(api.bearer(adminToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                                """
+                                {"branchId":1,"enrollNo":"CG-01","name":"分班学员","gender":0,"mentorTeacherId":1101}
+                                """))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        long studentId = objectMapper.readTree(created).get("data").get("id").asLong();
+
+        jdbcTemplate.update(
+                """
+                INSERT INTO t_course (id, tenant_id, name, lesson_minutes)
+                VALUES (88001, 1, 'IT课程', 60)
+                ON DUPLICATE KEY UPDATE name = VALUES(name), deleted_at = 0
+                """);
+        jdbcTemplate.update(
+                """
+                INSERT INTO t_class_group (id, tenant_id, branch_id, name, course_id, capacity, status)
+                VALUES (88002, 1, 1, 'IT一组', 88001, 20, 1)
+                ON DUPLICATE KEY UPDATE name = VALUES(name), deleted_at = 0
+                """);
+        jdbcTemplate.update(
+                """
+                INSERT INTO t_student_class_group
+                  (id, tenant_id, student_id, class_group_id, joined_at, left_at)
+                VALUES (88003, 1, ?, 88002, NOW(3), NULL)
+                ON DUPLICATE KEY UPDATE left_at = NULL, deleted_at = 0
+                """,
+                studentId);
+
+        mockMvc.perform(get("/api/students/" + studentId).with(api.bearer(adminToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.classGroups", hasSize(1)))
+                .andExpect(jsonPath("$.data.classGroups[0].name").value("IT一组"));
+
+        mockMvc.perform(get("/api/students").param("classGroupId", "88002").with(api.bearer(adminToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.records[?(@.enrollNo=='CG-01')]", hasSize(1)));
+    }
+
     @Autowired
     private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 }

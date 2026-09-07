@@ -11,13 +11,13 @@ export type Course = {
 };
 
 export type ClassGroup = {
-  id: number;
-  tenantId: number;
-  branchId: number;
+  id: string | number;
+  tenantId: string | number;
+  branchId: string | number;
   name: string;
-  courseId: number;
+  courseId?: string | number;
   courseName?: string;
-  headTeacherId?: number;
+  headTeacherId?: string | number;
   headTeacherName?: string;
   capacity: number;
   currentCount: number;
@@ -34,7 +34,7 @@ export type ClassRoom = {
 };
 
 export type ClassMember = {
-  studentId: number;
+  studentId: string | number;
   studentName?: string;
   enrollNo?: string;
   joinedAt?: string;

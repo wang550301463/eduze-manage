@@ -28,7 +28,7 @@ export function BulkAssignClassDialog({
     try {
       await studentApi.bulkAssignClass({
         studentIds,
-        classGroupId: Number(classGroupId) || 0,
+        classGroupId,
       });
       toast.success('批量分班成功');
       onDone();

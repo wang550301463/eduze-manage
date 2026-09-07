@@ -73,7 +73,7 @@ export const studentApi = {
     apiFetch<void>(`/api/packages/${sid(id)}`, { method: 'DELETE' }),
   searchGuardians: (phone: string) =>
     apiFetch<PageResult<Guardian>>(`/api/guardians?phone=${encodeURIComponent(phone)}&size=10`),
-  bulkAssignClass: (body: { studentIds: EntityId[]; classGroupId: EntityId | number }) =>
+  bulkAssignClass: (body: { studentIds: EntityId[]; classGroupId: EntityId }) =>
     apiFetch<void>('/api/students/bulk/assign-class', {
       method: 'POST',
       body: JSON.stringify(body),
