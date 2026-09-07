@@ -43,3 +43,6 @@ web/playwright-report/
 # Socrates brainstorm companion sessions
 .socrates/
 *.sql.gz
+
+# Git worktrees
+.worktrees/
