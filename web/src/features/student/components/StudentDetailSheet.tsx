@@ -21,10 +21,11 @@ import { StudentBasicTab } from './StudentBasicTab';
 import { StudentFormDialog } from './StudentFormDialog';
 import { StudentGuardiansTab } from './StudentGuardiansTab';
 import { StudentLeaveTab } from './StudentLeaveTab';
+import { StudentLessonHourLedgerTab } from './StudentLessonHourLedgerTab';
 import { StudentPackagesTab } from './StudentPackagesTab';
 import { TransferClassDialog } from './TransferClassDialog';
 
-const TABS = ['基础', '家长', '课时包', '出勤', '请假'] as const;
+const TABS = ['基础', '家长', '课时包', '课时流水', '出勤', '请假'] as const;
 
 type Props = {
   studentId: EntityId | null;
@@ -160,6 +161,9 @@ export function StudentDetailSheet({
                 ) : null}
                 {tab === '家长' ? <StudentGuardiansTab studentId={student.id} /> : null}
                 {tab === '课时包' ? <StudentPackagesTab studentId={student.id} /> : null}
+                {tab === '课时流水' ? (
+                  <StudentLessonHourLedgerTab studentId={student.id} />
+                ) : null}
                 {tab === '出勤' ? <StudentAttendanceTab studentId={student.id} /> : null}
                 {tab === '请假' ? <StudentLeaveTab /> : null}
               </div>

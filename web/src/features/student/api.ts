@@ -3,6 +3,7 @@ import type {
   CoursePackage,
   EntityId,
   Guardian,
+  LessonHourLedger,
   MentorHistoryItem,
   PageResult,
   StageAssessment,
@@ -104,6 +105,8 @@ export const studentApi = {
     }),
   listAssessments: (id: EntityId) =>
     apiFetch<StageAssessment[]>(`/api/students/${sid(id)}/stage-assessments`),
+  listLessonHourLedger: (id: EntityId) =>
+    apiFetch<LessonHourLedger[]>(`/api/students/${sid(id)}/lesson-hour-ledger`),
 };
 
 export const teacherApi = {

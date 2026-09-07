@@ -78,6 +78,23 @@ export type CoursePackage = {
   alertLow: boolean;
 };
 
+export type LessonHourLedger = {
+  id: EntityId;
+  studentId: EntityId;
+  branchId: EntityId;
+  lessonId?: EntityId;
+  lessonStudentId?: EntityId;
+  packageId?: EntityId;
+  eventType: string;
+  minutesDelta: number;
+  balanceAfterMinutes?: number | null;
+  occurredAt: string;
+  operatorId?: EntityId;
+  note?: string;
+  relatedLedgerId?: EntityId;
+  createdAt?: string;
+};
+
 export type PageResult<T> = {
   records: T[];
   total: number;
