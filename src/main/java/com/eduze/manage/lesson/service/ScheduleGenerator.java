@@ -3,6 +3,8 @@ package com.eduze.manage.lesson.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.eduze.manage.common.exception.BizException;
 import com.eduze.manage.common.exception.ErrorCode;
+import com.eduze.manage.course.domain.ClassGroup;
+import com.eduze.manage.course.mapper.ClassGroupMapper;
 import com.eduze.manage.lesson.domain.Lesson;
 import com.eduze.manage.lesson.domain.LessonStudent;
 import com.eduze.manage.lesson.domain.LessonSubscription;
@@ -23,7 +25,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,12 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * 基于 TeacherAvailability 模板批量生成未来 N 周课次的核心算法。
  * 输出：每个老师每个 availability 对应未来每周一节课次，并按订阅自动入名单。
+ * 仅处理已绑定 ClassGroup 的可用时段（D2）。
  */
 @Service
 @RequiredArgsConstructor
 public class ScheduleGenerator {
 
     private final TeacherAvailabilityMapper availabilityMapper;
+    private final ClassGroupMapper classGroupMapper;
     private final LessonMapper lessonMapper;
     private final LessonSubscriptionMapper subscriptionMapper;
     private final LessonStudentMapper lessonStudentMapper;
@@ -47,7 +53,6 @@ public class ScheduleGenerator {
         Long tenantId = TenantContext.getTenantId();
         Set<LocalDate> holidays = req.getHolidays() == null ? Set.of() : new HashSet<>(req.getHolidays());
 
-        // 1. 加载启用中的 availability
         LambdaQueryWrapper<TeacherAvailability> wrapper = new LambdaQueryWrapper<TeacherAvailability>()
                 .eq(TeacherAvailability::getStatus, 1);
         if (req.getBranchId() != null) {
@@ -58,13 +63,17 @@ public class ScheduleGenerator {
         }
         List<TeacherAvailability> avails = availabilityMapper.selectList(wrapper);
 
+        Set<Long> boundAvailIds = loadBoundAvailabilityIds(avails);
+
         List<BulkGenerateResult.ConflictItem> conflicts = new ArrayList<>();
         int generated = 0;
         int skipped = 0;
         int rosterAdded = 0;
 
         for (TeacherAvailability avail : avails) {
-            // 该 availability 对应的活跃订阅
+            if (!boundAvailIds.contains(avail.getId())) {
+                continue;
+            }
             List<LessonSubscription> subs = subscriptionMapper.selectList(
                     new LambdaQueryWrapper<LessonSubscription>()
                             .eq(LessonSubscription::getTeacherAvailabilityId, avail.getId())
@@ -74,7 +83,6 @@ public class ScheduleGenerator {
                 LocalDate weekStart = req.getFromDate().plusWeeks(weekOffset);
                 LocalDate lessonDate = nextDayOfWeek(weekStart, avail.getDayOfWeek());
 
-                // valid_from / valid_to 检查
                 if (avail.getValidFrom() != null && lessonDate.isBefore(avail.getValidFrom())) {
                     continue;
                 }
@@ -88,7 +96,6 @@ public class ScheduleGenerator {
                 LocalDateTime startAt = lessonDate.atStartOfDay().plusMinutes(avail.getStartMinute());
                 LocalDateTime endAt = lessonDate.atStartOfDay().plusMinutes(avail.getEndMinute());
 
-                // 幂等：同 teacher_id + start_at 已存在则跳过
                 Long existing = lessonMapper.selectCount(
                         new LambdaQueryWrapper<Lesson>()
                                 .eq(Lesson::getTeacherId, avail.getTeacherId())
@@ -124,7 +131,6 @@ public class ScheduleGenerator {
                 lessonMapper.insert(lesson);
                 generated++;
 
-                // 把订阅学员加入名单
                 for (LessonSubscription sub : subs) {
                     if (sub.getValidFrom() != null && lessonDate.isBefore(sub.getValidFrom())) continue;
                     if (sub.getValidTo() != null && lessonDate.isAfter(sub.getValidTo())) continue;
@@ -158,6 +164,27 @@ public class ScheduleGenerator {
                 .build();
     }
 
+    private Set<Long> loadBoundAvailabilityIds(List<TeacherAvailability> avails) {
+        if (avails.isEmpty()) {
+            return Set.of();
+        }
+        Set<Long> ids = avails.stream()
+                .map(TeacherAvailability::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        if (ids.isEmpty()) {
+            return Set.of();
+        }
+        return classGroupMapper
+                .selectList(new LambdaQueryWrapper<ClassGroup>()
+                        .eq(ClassGroup::getTenantId, TenantContext.getTenantId())
+                        .in(ClassGroup::getTeacherAvailabilityId, ids))
+                .stream()
+                .map(ClassGroup::getTeacherAvailabilityId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
+
     private static String conflictReason(ConflictReport report) {
         if (report.getTeacher() != null) {
             return "教师时间冲突";
@@ -168,22 +195,19 @@ public class ScheduleGenerator {
         if (report.getClassGroup() != null) {
             return "班级时间冲突";
         }
+        if (report.getBoundAvailability() != null) {
+            return "与已绑分组正常时段冲突";
+        }
         return "时间冲突";
     }
 
-    /**
-     * Returns the date of the given dayOfWeek (1=Mon...7=Sun) in the week containing `weekStart`.
-     * If weekStart is Monday and dayOfWeek=6 (Sat), returns weekStart.plusDays(5).
-     */
     private LocalDate nextDayOfWeek(LocalDate weekStart, int dayOfWeek) {
-        // weekStart 视为周的起点；ISO DayOfWeek: 1=Mon..7=Sun
         int wsDow = weekStart.getDayOfWeek().getValue();
         int diff = dayOfWeek - wsDow;
         if (diff < 0) diff += 7;
         return weekStart.plusDays(diff);
     }
 
-    /** 公共方法：根据 weekStart 计算 dayOfWeek 对应日期，供其他 service 复用。 */
     public LocalDate resolveDate(LocalDate weekStart, DayOfWeek dow) {
         return nextDayOfWeek(weekStart, dow.getValue());
     }
