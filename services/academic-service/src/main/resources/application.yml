@@ -1,0 +1,39 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: academic-service
+  datasource:
+    url: ${ACADEMIC_DB_URL:jdbc:mysql://localhost:3306/eduze_academic?connectionTimeZone=Asia/Shanghai&forceConnectionTimeZoneToSession=true}
+    username: ${ACADEMIC_DB_USER:eduze_academic}
+    password: ${ACADEMIC_DB_PASSWORD}
+  flyway:
+    locations: classpath:db/migration,classpath:db/runtime
+    enabled: true
+    placeholders:
+      demoSeed: "false"
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      username: ${ACADEMIC_REDIS_USER:}
+      password: ${ACADEMIC_REDIS_PASSWORD}
+      timeout: 3s
+eduze:
+  tenant:
+    default-id: ${TENANT_ID:1}
+  runtime:
+    service-name: academic
+    service-token: ${ACADEMIC_SERVICE_TOKEN}
+    security:
+      enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+springdoc:
+  api-docs:
+    path: /internal/openapi
+  paths-to-match: /api/**

@@ -1,3 +1,4 @@
+import { TeachingTasks } from '@/features/platform/TeachingTasks';
 import {
   ArrowRight,
   CalendarBlank,
@@ -120,6 +121,9 @@ export function StudioWorkbench({ teaching = false }: { teaching?: boolean }): J
           </div>
         )}
       </div>
+      {branch && can('course:read') && can('student:read') && (
+        <TeachingTasks key={String(branch.id)} branchId={String(branch.id)} />
+      )}
       <section className="studio-hero flex min-h-[206px] items-center justify-between px-6 py-7 sm:px-8">
         <div className="relative z-10 max-w-[500px]">
           <p className="mb-3 text-xs font-medium text-primary">

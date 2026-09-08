@@ -1,0 +1,34 @@
+services:
+  identity:
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+  academic:
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+  teaching:
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+  portfolio:
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+  media:
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      EDUZE_MEDIA_PROVIDER: oss
+      EDUZE_RUNTIME_SECURITY_SIGNED_UPLOAD_ENABLED: "false"
+  notification:
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+  engagement:
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+  commerce:
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+  gateway:
+    ports: !override
+      - "80:8080"
+      - "443:8443"
+    volumes: !override
+      - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro

@@ -1,0 +1,6 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><parent><groupId>com.eduze</groupId><artifactId>eduze-platform</artifactId><version>1.0.0</version><relativePath>../../pom.xml</relativePath></parent><artifactId>media-service</artifactId><dependencies><dependency><groupId>com.eduze</groupId><artifactId>platform-runtime</artifactId><version>1.0.0</version></dependency><dependency><groupId>com.aliyun.oss</groupId><artifactId>aliyun-sdk-oss</artifactId><version>3.18.3</version>
+<!-- OSS uses explicit credentials; the unused SDK INI profile provider requires vulnerable ini4j. -->
+<exclusions><exclusion><groupId>org.ini4j</groupId><artifactId>ini4j</artifactId></exclusion>
+<!-- Spring Framework 6 supplies the Commons Logging API through spring-jcl. -->
+<exclusion><groupId>commons-logging</groupId><artifactId>commons-logging</artifactId></exclusion></exclusions>
+</dependency></dependencies><build><plugins><plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId></plugin></plugins></build></project>

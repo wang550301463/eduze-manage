@@ -73,6 +73,32 @@ const AttendancePage = lazy(() =>
   import('@/pages/AttendancePage').then((m) => ({ default: m.AttendancePage })),
 );
 
+const TeachingPage = lazy(() =>
+  import('@/features/platform/TeachingPage').then((m) => ({ default: m.TeachingPage })),
+);
+const ThemesPage = lazy(() =>
+  import('@/features/platform/ThemesPage').then((m) => ({ default: m.ThemesPage })),
+);
+const PortfolioPage = lazy(() =>
+  import('@/features/platform/PortfolioPage').then((m) => ({ default: m.PortfolioPage })),
+);
+const FamilyPage = lazy(() =>
+  import('@/features/platform/FamilyPage').then((m) => ({ default: m.FamilyPage })),
+);
+const MessagesPage = lazy(() =>
+  import('@/features/platform/MessagesPage').then((m) => ({ default: m.MessagesPage })),
+);
+
+const EngagementPage = lazy(() =>
+  import('@/features/platform/EngagementPage').then((m) => ({ default: m.EngagementPage })),
+);
+const CommercePage = lazy(() =>
+  import('@/features/platform/CommercePage').then((m) => ({ default: m.CommercePage })),
+);
+const GrowthPage = lazy(() =>
+  import('@/features/platform/GrowthPage').then((m) => ({ default: m.GrowthPage })),
+);
+
 export const router = createBrowserRouter([
   {
     path: '/login',
@@ -249,6 +275,86 @@ export const router = createBrowserRouter([
               <ProtectedRoute permissions={['attendance:read']}>
                 <LazyPage>
                   <AttendancePage />
+                </LazyPage>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'teaching',
+            element: (
+              <ProtectedRoute permissions={['course:read']}>
+                <LazyPage>
+                  <TeachingPage />
+                </LazyPage>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'teaching/themes',
+            element: (
+              <ProtectedRoute permissions={['course:read']}>
+                <LazyPage>
+                  <ThemesPage />
+                </LazyPage>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'portfolio',
+            element: (
+              <ProtectedRoute permissions={['student:read']}>
+                <LazyPage>
+                  <PortfolioPage />
+                </LazyPage>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'families',
+            element: (
+              <ProtectedRoute permissions={['student:read']}>
+                <LazyPage>
+                  <FamilyPage />
+                </LazyPage>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'messages',
+            element: (
+              <ProtectedRoute permissions={['lesson:read']}>
+                <LazyPage>
+                  <MessagesPage />
+                </LazyPage>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'growth',
+            element: (
+              <ProtectedRoute permissions={['student:read']}>
+                <LazyPage>
+                  <GrowthPage />
+                </LazyPage>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'engagement',
+            element: (
+              <ProtectedRoute permissions={['engagement:write']}>
+                <LazyPage>
+                  <EngagementPage />
+                </LazyPage>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: 'commerce',
+            element: (
+              <ProtectedRoute permissions={['commerce:write']}>
+                <LazyPage>
+                  <CommercePage />
                 </LazyPage>
               </ProtectedRoute>
             ),

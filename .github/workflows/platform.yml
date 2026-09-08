@@ -1,0 +1,55 @@
+name: Platform verification
+on:
+  pull_request:
+  push:
+    branches: [main, 'codex/**']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install PyYAML==6.0.3
+      - run: ./scripts/verify-platform.sh
+      - run: ./scripts/security-platform.sh
+      - run: python3 scripts/platform-env.py
+      - run: docker compose --env-file docker/platform/.env.dev -f docker/platform/compose.yml up -d --build --wait --wait-timeout 180
+      - run: python3 scripts/verify-database-isolation.py
+      - run: python3 scripts/verify-jdbc-timezone.py
+      - run: python3 scripts/export-platform-contracts.py && pnpm --dir packages/contracts check
+      - run: git diff --exit-code -- packages/contracts/openapi packages/contracts/generated
+      - run: python3 scripts/platform-smoke.py
+      - run: docker compose --env-file docker/platform/.env.dev -f docker/platform/compose.yml down
+        if: always()
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-reports
+          path: |
+            services/*/target/surefire-reports
+            services/*/target/failsafe-reports
+            services/*/target/checkstyle-result.xml
+            services/*/target/pmd.xml
+            services/*/target/spotbugsXml.xml
+            target/security/*.json
+            target/platform-smoke.json
+            target/database-isolation.json
+          retention-days: 14

@@ -16,21 +16,38 @@ export function Sidebar({ className }: { className?: string }): JSX.Element {
   const groups = [
     {
       title: '工作空间',
-      items: mainNavItems.filter((item) => ['/', '/workbench'].includes(item.path)),
+      items: mainNavItems.filter((item) => ['/', '/workbench', '/messages'].includes(item.path)),
     },
     {
       title: '日常教学',
       items: mainNavItems.filter((item) =>
-        ['/schedule', '/attendance', '/attendance/leaves', '/students', '/lesson-history'].includes(
-          item.path,
-        ),
+        [
+          '/schedule',
+          '/attendance',
+          '/attendance/leaves',
+          '/students',
+          '/lesson-history',
+          '/portfolio',
+          '/growth',
+          '/families',
+        ].includes(item.path),
       ),
     },
     {
       title: '教学资源',
       items: mainNavItems.filter((item) =>
-        ['/teachers/availabilities', '/courses', '/courses/class-groups'].includes(item.path),
+        [
+          '/teaching',
+          '/teaching/themes',
+          '/teachers/availabilities',
+          '/courses',
+          '/courses/class-groups',
+        ].includes(item.path),
       ),
+    },
+    {
+      title: '招生与经营',
+      items: mainNavItems.filter((item) => ['/engagement', '/commerce'].includes(item.path)),
     },
     { title: '机构设置', items: settingsNavItems },
   ];

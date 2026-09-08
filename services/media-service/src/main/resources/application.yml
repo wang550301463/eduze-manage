@@ -1,0 +1,66 @@
+server:
+  port: ${SERVER_PORT:8080}
+spring:
+  application:
+    name: media-service
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/eduze_media?connectionTimeZone=Asia/Shanghai&forceConnectionTimeZoneToSession=true}
+    username: ${DB_USER:eduze_media}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 8
+  flyway:
+    locations: classpath:db/runtime,classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: never
+eduze:
+  runtime:
+    service-name: media
+    service-token: ${SERVICE_TOKEN}
+    services:
+      identity: ${IDENTITY_URL:http://identity:8080}
+      academic: ${ACADEMIC_URL:http://academic:8080}
+      teaching: ${TEACHING_URL:http://teaching:8080}
+      portfolio: ${PORTFOLIO_URL:http://portfolio:8080}
+      media: ${MEDIA_URL:http://media:8080}
+      notification: ${NOTIFICATION_URL:http://notification:8080}
+    callers:
+      identity: ${IDENTITY_SERVICE_TOKEN}
+      academic: ${ACADEMIC_SERVICE_TOKEN}
+      teaching: ${TEACHING_SERVICE_TOKEN}
+      portfolio: ${PORTFOLIO_SERVICE_TOKEN}
+      media: ${MEDIA_SERVICE_TOKEN}
+      notification: ${NOTIFICATION_SERVICE_TOKEN}
+logging:
+  structured:
+    format:
+      console: logstash
+springdoc:
+  api-docs:
+    path: /internal/openapi
+  paths-to-match: /api/**
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+eduze:
+  media:
+    provider: local
+    local-root: ${MEDIA_LOCAL_ROOT:/data/media}
+    public-base: ${PUBLIC_BASE_URL:http://localhost:18880}
+  runtime:
+    security:
+      signed-upload-enabled: true

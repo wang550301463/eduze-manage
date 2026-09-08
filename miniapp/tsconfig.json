@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "CommonJS",
+    "strict": true,
+    "skipLibCheck": true,
+    "rootDir": "..",
+    "outDir": "dist",
+    "lib": ["ES2020"],
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": ["app.ts", "config.ts", "core/**/*.ts", "pages/**/*.ts"],
+  "exclude": ["dist", "tests"]
+}

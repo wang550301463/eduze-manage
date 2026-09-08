@@ -17,8 +17,16 @@ export type NavItem = {
 };
 
 export const mainNavItems: NavItem[] = [
+  { label: '招生与经营', path: '/engagement', icon: Buildings, permission: 'engagement:write' },
+  { label: '商城与订单', path: '/commerce', icon: ClipboardText, permission: 'commerce:write' },
   { label: '今日概览', path: '/', icon: GraduationCap },
   { label: '我的教学', path: '/workbench', icon: GraduationCap, permission: 'lesson:read' },
+  { label: '教案与课件', path: '/teaching', icon: ChalkboardTeacher, permission: 'course:read' },
+  { label: '班级教学计划', path: '/teaching/themes', icon: Calendar, permission: 'course:read' },
+  { label: '作品与课效', path: '/portfolio', icon: ClipboardText, permission: 'student:read' },
+  { label: '成长与作品展', path: '/growth', icon: ClipboardText, permission: 'student:read' },
+  { label: '家庭授权', path: '/families', icon: UsersThree, permission: 'student:read' },
+  { label: '消息与待办', path: '/messages', icon: ClipboardText, permission: 'lesson:read' },
   { label: '学员档案', path: '/students', icon: UsersThree, permission: 'student:read' },
   { label: '课程记录', path: '/lesson-history', icon: ClipboardText, permission: 'student:read' },
   {

@@ -1,0 +1,430 @@
+{
+  "recordedAt": "2026-09-08T10:06:52.595180+00:00",
+  "scope": "local development acceptance; production providers and real devices not verified",
+  "javaModules": [
+    {
+      "module": "legacy-support",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 1
+    },
+    {
+      "module": "platform-runtime",
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "academic-service",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "commerce-service",
+      "tests": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "engagement-service",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "identity-service",
+      "tests": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "media-service",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "notification-service",
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "portfolio-service",
+      "tests": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "teaching-service",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "module": "architecture-tests",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "web": {
+    "testFiles": 37,
+    "tests": 110,
+    "browserMockedTests": 4,
+    "lintErrors": 0,
+    "existingLintWarnings": 4
+  },
+  "health": [
+    {
+      "Service": "academic",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "commerce",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "engagement",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "gateway",
+      "State": "running",
+      "Health": ""
+    },
+    {
+      "Service": "identity",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "media",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "mysql",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "notification",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "portfolio",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "redis",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "teaching",
+      "State": "running",
+      "Health": "healthy"
+    },
+    {
+      "Service": "web",
+      "State": "running",
+      "Health": ""
+    }
+  ],
+  "databaseIsolation": [
+    {
+      "service": "identity",
+      "ownSchemaReadable": true,
+      "foreignSchemaDenied": "academic"
+    },
+    {
+      "service": "academic",
+      "ownSchemaReadable": true,
+      "foreignSchemaDenied": "teaching"
+    },
+    {
+      "service": "teaching",
+      "ownSchemaReadable": true,
+      "foreignSchemaDenied": "portfolio"
+    },
+    {
+      "service": "portfolio",
+      "ownSchemaReadable": true,
+      "foreignSchemaDenied": "media"
+    },
+    {
+      "service": "media",
+      "ownSchemaReadable": true,
+      "foreignSchemaDenied": "notification"
+    },
+    {
+      "service": "notification",
+      "ownSchemaReadable": true,
+      "foreignSchemaDenied": "engagement"
+    },
+    {
+      "service": "engagement",
+      "ownSchemaReadable": true,
+      "foreignSchemaDenied": "commerce"
+    },
+    {
+      "service": "commerce",
+      "ownSchemaReadable": true,
+      "foreignSchemaDenied": "identity"
+    },
+    {
+      "redisUser": "identity",
+      "ownPrefixWritable": true,
+      "foreignPrefixDenied": true,
+      "globalEnumerationDenied": true
+    },
+    {
+      "redisUser": "academic",
+      "ownPrefixWritable": true,
+      "foreignPrefixDenied": true,
+      "globalEnumerationDenied": true
+    }
+  ],
+  "jdbcTimezone": "All eight deployed services: Asia/Shanghai JVM/session, due=true, lag 0 seconds, 09:30 lesson preserved",
+  "httpSmoke": {
+    "at": "2026-09-08T10:03:27.154361+00:00",
+    "campuses": 2,
+    "students": 6,
+    "http": {
+      "requests": 166,
+      "p50Ms": 42.09,
+      "p95Ms": 107.45,
+      "errors": 0,
+      "scope": "sequential development smoke, not production capacity"
+    },
+    "verified": "classroom and portfolio publication, household media download, lesson and portfolio inbox delivery, revocation, no lesson debit"
+  },
+  "load": {
+    "at": "2026-09-08T10:01:29.009630+00:00",
+    "concurrency": 8,
+    "durationSeconds": 3.65,
+    "fixtureBytes": 3147775,
+    "scope": "local Docker Desktop, synthetic PNG; not a production capacity claim",
+    "kinds": {
+      "read": {
+        "count": 200,
+        "errors": 0,
+        "p50Ms": 94.24000000000001,
+        "p95Ms": 291.99,
+        "maxMs": 372.62
+      },
+      "upload": {
+        "count": 16,
+        "errors": 0,
+        "p50Ms": 369.31,
+        "p95Ms": 371.58,
+        "maxMs": 373.12
+      }
+    },
+    "containers": [
+      {
+        "BlockIO": "0B / 295kB",
+        "CPUPerc": "2.43%",
+        "Container": "b6684e908ee668bcc7641809c781eb09246d402618db423fadbf4bead173107b",
+        "ID": "b6684e908ee6",
+        "MemPerc": "54.49%",
+        "MemUsage": "348.7MiB / 640MiB",
+        "Name": "eduze-platform-academic-1",
+        "NetIO": "2.26MB / 2.01MB",
+        "PIDs": "44"
+      },
+      {
+        "BlockIO": "0B / 262kB",
+        "CPUPerc": "1.39%",
+        "Container": "c7ea4901b94c9ef202e4f2342e05c0b6e2698588b26aa14d8225fc811f3d30c2",
+        "ID": "c7ea4901b94c",
+        "MemPerc": "34.62%",
+        "MemUsage": "221.6MiB / 640MiB",
+        "Name": "eduze-platform-commerce-1",
+        "NetIO": "78.1kB / 69.1kB",
+        "PIDs": "33"
+      },
+      {
+        "BlockIO": "0B / 291kB",
+        "CPUPerc": "0.84%",
+        "Container": "7f4692c8d74492bb96946e9a5abcab2071e07596f8d5b1fb082081b2df0d45de",
+        "ID": "7f4692c8d744",
+        "MemPerc": "32.67%",
+        "MemUsage": "209.1MiB / 640MiB",
+        "Name": "eduze-platform-engagement-1",
+        "NetIO": "76.6kB / 68.9kB",
+        "PIDs": "33"
+      },
+      {
+        "BlockIO": "0B / 12.3kB",
+        "CPUPerc": "0.42%",
+        "Container": "1bf78c343613e26718e35d3d561a528ef0f66f9d796e1a32443cdc6b6f8079c6",
+        "ID": "1bf78c343613",
+        "MemPerc": "2.52%",
+        "MemUsage": "3.23MiB / 128MiB",
+        "Name": "eduze-platform-gateway-1",
+        "NetIO": "105MB / 105MB",
+        "PIDs": "2"
+      },
+      {
+        "BlockIO": "0B / 287kB",
+        "CPUPerc": "3.49%",
+        "Container": "777d3b46810e4f288c79bdb4f6d0c68a0ae91dab53d6f74a029951f45a4a8e01",
+        "ID": "777d3b46810e",
+        "MemPerc": "52.45%",
+        "MemUsage": "335.6MiB / 640MiB",
+        "Name": "eduze-platform-identity-1",
+        "NetIO": "4.69MB / 2.68MB",
+        "PIDs": "44"
+      },
+      {
+        "BlockIO": "0B / 50.7MB",
+        "CPUPerc": "0.11%",
+        "Container": "a1aa4d942988fca0a26e59d320d182f615551d1ef48352ef10c0c189943b0b87",
+        "ID": "a1aa4d942988",
+        "MemPerc": "36.78%",
+        "MemUsage": "235.4MiB / 640MiB",
+        "Name": "eduze-platform-media-1",
+        "NetIO": "51.7MB / 1.03MB",
+        "PIDs": "34"
+      },
+      {
+        "BlockIO": "35.4MB / 343MB",
+        "CPUPerc": "2.45%",
+        "Container": "8c206a9d472972e475278b16b308b8ee85fa417e57b4fe7029f17ad60e392ae8",
+        "ID": "8c206a9d4729",
+        "MemPerc": "68.66%",
+        "MemUsage": "703MiB / 1GiB",
+        "Name": "eduze-platform-mysql-1",
+        "NetIO": "12.1MB / 16.3MB",
+        "PIDs": "112"
+      },
+      {
+        "BlockIO": "0B / 283kB",
+        "CPUPerc": "0.17%",
+        "Container": "e4b0faf5de7b9c0af64370a4212f9c80340384604bd52a2c7eff3c608304c16b",
+        "ID": "e4b0faf5de7b",
+        "MemPerc": "33.96%",
+        "MemUsage": "217.3MiB / 640MiB",
+        "Name": "eduze-platform-notification-1",
+        "NetIO": "412kB / 384kB",
+        "PIDs": "34"
+      },
+      {
+        "BlockIO": "0B / 254kB",
+        "CPUPerc": "0.60%",
+        "Container": "66559f42593919ebf20b04ab2ea89cf5a538efd75895b5f2a579da69966ecf3e",
+        "ID": "66559f425939",
+        "MemPerc": "36.18%",
+        "MemUsage": "231.6MiB / 640MiB",
+        "Name": "eduze-platform-portfolio-1",
+        "NetIO": "2.6MB / 2.83MB",
+        "PIDs": "34"
+      },
+      {
+        "BlockIO": "36.9kB / 0B",
+        "CPUPerc": "0.16%",
+        "Container": "b9287a3c138f5455f9aaad5d6eb71372711b2c29114373a54aaabb8b9202c565",
+        "ID": "b9287a3c138f",
+        "MemPerc": "3.64%",
+        "MemUsage": "9.328MiB / 256MiB",
+        "Name": "eduze-platform-redis-1",
+        "NetIO": "139kB / 67kB",
+        "PIDs": "6"
+      },
+      {
+        "BlockIO": "0B / 270kB",
+        "CPUPerc": "0.65%",
+        "Container": "5e3c2b617d0d8e0bab59b62d2dd4b8c155cb6bafb199ca44f1e7a15bb420249e",
+        "ID": "5e3c2b617d0d",
+        "MemPerc": "34.74%",
+        "MemUsage": "222.3MiB / 640MiB",
+        "Name": "eduze-platform-teaching-1",
+        "NetIO": "325kB / 330kB",
+        "PIDs": "34"
+      },
+      {
+        "BlockIO": "0B / 8.19kB",
+        "CPUPerc": "0.00%",
+        "Container": "a0fa35cea6da221067ce1662c1b5e07ae5ad9ad404baebcb11285ed07842ef9e",
+        "ID": "a0fa35cea6da",
+        "MemPerc": "5.50%",
+        "MemUsage": "7.039MiB / 128MiB",
+        "Name": "eduze-platform-web-1",
+        "NetIO": "3.3kB / 126B",
+        "PIDs": "9"
+      }
+    ]
+  },
+  "backup": {
+    "directory": "20260908T100511Z",
+    "verifiedAt": 1788861971.40725,
+    "schemas": [
+      {
+        "database": "eduze_identity",
+        "tables": 13,
+        "tableRowCountsMatched": true
+      },
+      {
+        "database": "eduze_academic",
+        "tables": 27,
+        "tableRowCountsMatched": true
+      },
+      {
+        "database": "eduze_teaching",
+        "tables": 12,
+        "tableRowCountsMatched": true
+      },
+      {
+        "database": "eduze_portfolio",
+        "tables": 12,
+        "tableRowCountsMatched": true
+      },
+      {
+        "database": "eduze_media",
+        "tables": 7,
+        "tableRowCountsMatched": true
+      },
+      {
+        "database": "eduze_notification",
+        "tables": 6,
+        "tableRowCountsMatched": true
+      },
+      {
+        "database": "eduze_engagement",
+        "tables": 10,
+        "tableRowCountsMatched": true
+      },
+      {
+        "database": "eduze_commerce",
+        "tables": 8,
+        "tableRowCountsMatched": true
+      }
+    ],
+    "scope": "checksums, schema/data import and quiesced table row counts; business consistency checked separately"
+  },
+  "security": {
+    "java-vulnerabilities": 0,
+    "client-vulnerabilities": 0,
+    "gitleaks": 0,
+    "knownMediumJavaFindings": 7
+  }
+}

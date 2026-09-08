@@ -1,0 +1,57 @@
+server:
+  port: ${SERVER_PORT:8088}
+spring:
+  application:
+    name: commerce-service
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/eduze_commerce?useUnicode=true&characterEncoding=UTF-8&connectionTimeZone=Asia/Shanghai&forceConnectionTimeZoneToSession=true}
+    username: ${DB_USER:eduze_commerce}
+    password: ${DB_PASSWORD:}
+  flyway:
+    locations: classpath:db/runtime,classpath:db/migration
+  jackson:
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+eduze:
+  runtime:
+    service-name: commerce
+    service-token: ${SERVICE_TOKEN:}
+    services:
+      identity: ${IDENTITY_URL:http://identity-service:8081}
+      academic: ${ACADEMIC_URL:http://academic-service:8082}
+      teaching: ${TEACHING_URL:http://teaching-service:8083}
+      portfolio: ${PORTFOLIO_URL:http://portfolio-service:8084}
+      media: ${MEDIA_URL:http://media-service:8085}
+      notification: ${NOTIFICATION_URL:http://notification-service:8086}
+    callers:
+      identity: ${IDENTITY_TOKEN:}
+      academic: ${ACADEMIC_TOKEN:}
+      teaching: ${TEACHING_TOKEN:}
+      portfolio: ${PORTFOLIO_TOKEN:}
+      media: ${MEDIA_TOKEN:}
+      notification: ${NOTIFICATION_TOKEN:}
+
+  payment:
+    app-id: ${WECHAT_PAY_APP_ID:}
+    mch-id: ${WECHAT_PAY_MCH_ID:}
+    merchant-serial: ${WECHAT_PAY_MERCHANT_SERIAL:}
+    private-key-path: ${WECHAT_PAY_PRIVATE_KEY_PATH:}
+    platform-serial: ${WECHAT_PAY_PLATFORM_SERIAL:}
+    platform-key-path: ${WECHAT_PAY_PLATFORM_KEY_PATH:}
+    api-v3-key: ${WECHAT_PAY_API_V3_KEY:}
+    notify-base-url: ${WECHAT_PAY_NOTIFY_BASE_URL:}
+
+springdoc:
+  api-docs:
+    path: /internal/openapi
+  paths-to-match: /api/**

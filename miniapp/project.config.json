@@ -1,0 +1,8 @@
+{
+  "description": "画室教师与家庭服务小程序",
+  "miniprogramRoot": "dist/miniapp/",
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "eduze-studio",
+  "setting": { "es6": true, "minified": true, "urlCheck": true }
+}

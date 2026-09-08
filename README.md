@@ -1,57 +1,33 @@
-# EduZE Manage
+# EduZE 美术画室平台
 
-教育机构管理系统 —— 单仓库 Spring Boot 3.2.5 + Java 17（后端） + React 18 + Vite 6（前端 `web/`），生产环境单 Jar 同包部署。
+Java 17 / Spring Boot 3.5.16 多模块微服务，React + TypeScript PC 管理端，以及原生 TypeScript 微信小程序。机构、教务、教学、作品、媒体、通知、招生、交易各自拥有数据库和部署镜像。
 
-## 技术栈
-
-后端：Spring Boot 3.2.5、MyBatis-Plus、MySQL 8、Redis 7、Spring Security + JWT、Flyway。前端：React 18、Vite 6、TypeScript、Tailwind CSS、Radix UI、cmdk。
-
-## 本地启动
+## 开发启动
 
 ```bash
-# 可选：仅数据库
-docker compose -f docker/docker-compose.dev.yml --env-file docker/.env.example up -d
-
-./mvnw spring-boot:run
-curl -s http://localhost:8080/actuator/health
-
-cd web && pnpm install && pnpm dev
-# http://localhost:5173  （API 代理到 8080）
+python3 scripts/platform-env.py  # 首次生成私有本地配置，拒绝覆盖已有文件
+./mvnw package
+pnpm --dir web install --frozen-lockfile
+pnpm --dir web build
+node miniapp/build.mjs
+docker compose --env-file docker/platform/.env.dev -f docker/platform/compose.yml up -d --build --wait
 ```
 
-默认账号：`admin` / `admin@123`
+PC 入口默认 http://localhost:18880。初始化管理员由私有配置中的 BOOTSTRAP_ADMIN_USERNAME / BOOTSTRAP_ADMIN_PASSWORD 指定，没有固定默认密码。微信、OSS、支付正式凭证需按运维文档配置；开发文件存储只在开发环境启用。
 
-## Docker 生产部署
+## 验证
 
 ```bash
-./mvnw -DskipTests package
-cp docker/.env.example docker/.env   # 编辑密码与 JWT_SECRET
-# 在 docker/certs/ 放置 server.crt / server.key
-docker compose -f docker/docker-compose.yml --env-file docker/.env up -d
+./scripts/verify-platform.sh
 ```
 
-详见 [docs/operations/runbook.md](docs/operations/runbook.md)。
-
-## 备份
-
-```bash
-DB_PASSWORD='***' ./scripts/backup-mysql.sh
-DB_PASSWORD='***' ./scripts/restore-mysql.sh /backups/eduze-YYYY-MM-DD-HHMM.sql.gz
-```
-
-## 测试
-
-```bash
-./mvnw test                    # 后端单元测试
-./mvnw verify                  # 含 Testcontainers 集成测试（*IT.java，需 Docker）
-cd web && pnpm test            # 前端单元测试
-cd web && pnpm e2e             # Playwright 冒烟（需后端运行）
-./scripts/e2e-bootstrap.sh     # 可选：自动起依赖并跑 E2E
-```
+该入口执行服务边界、独立数据库配置、Java 规范门禁、可执行包一致性、OpenAPI 契约、后端测试、PC lint/测试/构建与小程序 TypeScript 编译。Testcontainers 测试需要 Docker。正式接入与真机验收单独记录，不以模拟测试替代。
 
 ## 文档
 
-- 设计：`docs/socrates/specs/2026-05-09-eduze-manage-design.md`
-- 实施计划：`docs/socrates/plans/2026-05-09-eduze-manage-phase1-plan.md`
-- 运维：`docs/operations/runbook.md`
-- 投产检查：`docs/operations/release-gate/`（设计 `docs/socrates/specs/2026-06-11-release-gate-design.md`，计划 `docs/socrates/plans/2026-06-11-release-gate-plan.md`）
+- [部署、备份与恢复](docs/operations/platform-runbook.md)
+- [实施与验收记录](docs/socrates/plans/2026-09-08-platform-execution.md)
+- 各服务的 API.md / README.md 提供业务接口和权限说明。
+- [原单体归档](legacy/monolith/README.md) 保留拆分前实现与回归基线；不参与新平台构建。
+
+正式部署必须使用 docker/platform/compose.prod.yml 覆盖配置，提供 HTTPS 证书与真实外部适配器配置。Compose 是单机部署方案。

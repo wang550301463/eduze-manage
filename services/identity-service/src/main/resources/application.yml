@@ -1,0 +1,47 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: identity-service
+  datasource:
+    url: ${IDENTITY_DB_URL:jdbc:mysql://localhost:3306/eduze_identity?connectionTimeZone=Asia/Shanghai&forceConnectionTimeZoneToSession=true}
+    username: ${IDENTITY_DB_USER:eduze_identity}
+    password: ${IDENTITY_DB_PASSWORD}
+  flyway:
+    locations: classpath:db/migration,classpath:db/runtime
+    enabled: true
+    placeholders:
+      demoSeed: "false"
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      username: ${IDENTITY_REDIS_USER:}
+      password: ${IDENTITY_REDIS_PASSWORD}
+      timeout: 3s
+eduze:
+  bootstrap:
+    admin-username: ${BOOTSTRAP_ADMIN_USERNAME:}
+    admin-password: ${BOOTSTRAP_ADMIN_PASSWORD:}
+  wechat:
+    app-id: ${WECHAT_APP_ID:}
+    secret: ${WECHAT_SECRET:}
+  tenant:
+    default-id: ${TENANT_ID:1}
+  jwt:
+    secret: ${JWT_SECRET}
+  runtime:
+    service-name: identity
+    service-token: ${IDENTITY_SERVICE_TOKEN}
+    security:
+      enabled: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+springdoc:
+  api-docs:
+    path: /internal/openapi
+  paths-to-match: /api/**

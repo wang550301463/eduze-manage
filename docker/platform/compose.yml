@@ -1,0 +1,623 @@
+name: eduze-platform
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    mem_limit: 1g
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?required}
+      IDENTITY_DB_PASSWORD: ${IDENTITY_DB_PASSWORD:?required}
+      ACADEMIC_DB_PASSWORD: ${ACADEMIC_DB_PASSWORD:?required}
+      TEACHING_DB_PASSWORD: ${TEACHING_DB_PASSWORD:?required}
+      PORTFOLIO_DB_PASSWORD: ${PORTFOLIO_DB_PASSWORD:?required}
+      MEDIA_DB_PASSWORD: ${MEDIA_DB_PASSWORD:?required}
+      NOTIFICATION_DB_PASSWORD: ${NOTIFICATION_DB_PASSWORD:?required}
+      ENGAGEMENT_DB_PASSWORD: ${ENGAGEMENT_DB_PASSWORD:?required}
+      COMMERCE_DB_PASSWORD: ${COMMERCE_DB_PASSWORD:?required}
+    volumes:
+    - platform_mysql:/var/lib/mysql
+    - ./mysql-init.sh:/docker-entrypoint-initdb.d/01-services.sh:ro
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - MYSQL_PWD="$MYSQL_ROOT_PASSWORD" mysqladmin ping -h localhost -uroot --silent
+      interval: 5s
+      timeout: 5s
+      retries: 30
+  redis:
+    image: redis:7.2-alpine
+    restart: unless-stopped
+    mem_limit: 256m
+    environment:
+      IDENTITY_REDIS_PASSWORD: ${IDENTITY_REDIS_PASSWORD:?required}
+      ACADEMIC_REDIS_PASSWORD: ${ACADEMIC_REDIS_PASSWORD:?required}
+    volumes:
+    - platform_redis:/data
+    - ./redis-start.sh:/usr/local/bin/service-redis.sh:ro
+    entrypoint:
+    - sh
+    - /usr/local/bin/service-redis.sh
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - REDISCLI_AUTH="$IDENTITY_REDIS_PASSWORD" redis-cli --user identity ping
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  identity:
+    image: eduze-identity:${IDENTITY_IMAGE_TAG:-${PLATFORM_VERSION:-local}}
+    build:
+      context: ../..
+      dockerfile: docker/platform/Service.Dockerfile
+      args:
+        SERVICE: identity-service
+    restart: unless-stopped
+    mem_limit: 640m
+    environment:
+      SERVER_PORT: '8080'
+      SPRING_PROFILES_ACTIVE: ${PLATFORM_PROFILE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eduze_identity?connectionTimeZone=Asia/Shanghai&forceConnectionTimeZoneToSession=true&characterEncoding=utf8
+      SPRING_DATASOURCE_USERNAME: eduze_identity
+      SPRING_DATASOURCE_PASSWORD: ${IDENTITY_DB_PASSWORD:?required}
+      DB_PASSWORD: ${IDENTITY_DB_PASSWORD:?required}
+      SERVICE_TOKEN: ${IDENTITY_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICE_NAME: identity
+      EDUZE_RUNTIME_SERVICE_TOKEN: ${IDENTITY_SERVICE_TOKEN:?required}
+      SPRING_FLYWAY_LOCATIONS: classpath:db/runtime,classpath:db/migration
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Shanghai -XX:MaxRAMPercentage=65.0 -XX:+ExitOnOutOfMemoryError
+      EDUZE_RUNTIME_SERVICES_IDENTITY: http://identity:8080
+      EDUZE_RUNTIME_CALLERS_IDENTITY: ${IDENTITY_SERVICE_TOKEN:?required}
+      IDENTITY_SERVICE_TOKEN: ${IDENTITY_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_ACADEMIC: http://academic:8080
+      EDUZE_RUNTIME_CALLERS_ACADEMIC: ${ACADEMIC_SERVICE_TOKEN:?required}
+      ACADEMIC_SERVICE_TOKEN: ${ACADEMIC_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_TEACHING: http://teaching:8080
+      EDUZE_RUNTIME_CALLERS_TEACHING: ${TEACHING_SERVICE_TOKEN:?required}
+      TEACHING_SERVICE_TOKEN: ${TEACHING_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_PORTFOLIO: http://portfolio:8080
+      EDUZE_RUNTIME_CALLERS_PORTFOLIO: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      PORTFOLIO_SERVICE_TOKEN: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_MEDIA: http://media:8080
+      EDUZE_RUNTIME_CALLERS_MEDIA: ${MEDIA_SERVICE_TOKEN:?required}
+      MEDIA_SERVICE_TOKEN: ${MEDIA_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_NOTIFICATION: http://notification:8080
+      EDUZE_RUNTIME_CALLERS_NOTIFICATION: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      NOTIFICATION_SERVICE_TOKEN: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      JWT_SECRET: ${JWT_SECRET:?required}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_USERNAME: identity
+      SPRING_DATA_REDIS_PASSWORD: ${IDENTITY_REDIS_PASSWORD:?required}
+      IDENTITY_REDIS_PASSWORD: ${IDENTITY_REDIS_PASSWORD:?required}
+      IDENTITY_DB_PASSWORD: ${IDENTITY_DB_PASSWORD:?required}
+      REDIS_PASSWORD: ${IDENTITY_REDIS_PASSWORD:?required}
+      BOOTSTRAP_ADMIN_USERNAME: ${BOOTSTRAP_ADMIN_USERNAME:?required}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:?required}
+      WECHAT_APP_ID: ${WECHAT_APP_ID:-}
+      WECHAT_APP_SECRET: ${WECHAT_APP_SECRET:-}
+      WECHAT_SECRET: ${WECHAT_APP_SECRET:-}
+      EDUZE_RUNTIME_SERVICES_ENGAGEMENT: http://engagement:8080
+      EDUZE_RUNTIME_CALLERS_ENGAGEMENT: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      ENGAGEMENT_SERVICE_TOKEN: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_COMMERCE: http://commerce:8080
+      EDUZE_RUNTIME_CALLERS_COMMERCE: ${COMMERCE_SERVICE_TOKEN:?required}
+      COMMERCE_SERVICE_TOKEN: ${COMMERCE_SERVICE_TOKEN:?required}
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ecs
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -fsS
+      - http://localhost:8080/actuator/health
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+  academic:
+    image: eduze-academic:${ACADEMIC_IMAGE_TAG:-${PLATFORM_VERSION:-local}}
+    build:
+      context: ../..
+      dockerfile: docker/platform/Service.Dockerfile
+      args:
+        SERVICE: academic-service
+    restart: unless-stopped
+    mem_limit: 640m
+    environment:
+      SERVER_PORT: '8080'
+      SPRING_PROFILES_ACTIVE: ${PLATFORM_PROFILE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eduze_academic?connectionTimeZone=Asia/Shanghai&forceConnectionTimeZoneToSession=true&characterEncoding=utf8
+      SPRING_DATASOURCE_USERNAME: eduze_academic
+      SPRING_DATASOURCE_PASSWORD: ${ACADEMIC_DB_PASSWORD:?required}
+      DB_PASSWORD: ${ACADEMIC_DB_PASSWORD:?required}
+      SERVICE_TOKEN: ${ACADEMIC_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICE_NAME: academic
+      EDUZE_RUNTIME_SERVICE_TOKEN: ${ACADEMIC_SERVICE_TOKEN:?required}
+      SPRING_FLYWAY_LOCATIONS: classpath:db/runtime,classpath:db/migration
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Shanghai -XX:MaxRAMPercentage=65.0 -XX:+ExitOnOutOfMemoryError
+      EDUZE_RUNTIME_SERVICES_IDENTITY: http://identity:8080
+      EDUZE_RUNTIME_CALLERS_IDENTITY: ${IDENTITY_SERVICE_TOKEN:?required}
+      IDENTITY_SERVICE_TOKEN: ${IDENTITY_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_ACADEMIC: http://academic:8080
+      EDUZE_RUNTIME_CALLERS_ACADEMIC: ${ACADEMIC_SERVICE_TOKEN:?required}
+      ACADEMIC_SERVICE_TOKEN: ${ACADEMIC_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_TEACHING: http://teaching:8080
+      EDUZE_RUNTIME_CALLERS_TEACHING: ${TEACHING_SERVICE_TOKEN:?required}
+      TEACHING_SERVICE_TOKEN: ${TEACHING_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_PORTFOLIO: http://portfolio:8080
+      EDUZE_RUNTIME_CALLERS_PORTFOLIO: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      PORTFOLIO_SERVICE_TOKEN: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_MEDIA: http://media:8080
+      EDUZE_RUNTIME_CALLERS_MEDIA: ${MEDIA_SERVICE_TOKEN:?required}
+      MEDIA_SERVICE_TOKEN: ${MEDIA_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_NOTIFICATION: http://notification:8080
+      EDUZE_RUNTIME_CALLERS_NOTIFICATION: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      NOTIFICATION_SERVICE_TOKEN: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      JWT_SECRET: ${JWT_SECRET:?required}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_USERNAME: academic
+      SPRING_DATA_REDIS_PASSWORD: ${ACADEMIC_REDIS_PASSWORD:?required}
+      ACADEMIC_REDIS_PASSWORD: ${ACADEMIC_REDIS_PASSWORD:?required}
+      ACADEMIC_DB_PASSWORD: ${ACADEMIC_DB_PASSWORD:?required}
+      REDIS_PASSWORD: ${ACADEMIC_REDIS_PASSWORD:?required}
+      EDUZE_RUNTIME_SERVICES_ENGAGEMENT: http://engagement:8080
+      EDUZE_RUNTIME_CALLERS_ENGAGEMENT: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      ENGAGEMENT_SERVICE_TOKEN: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_COMMERCE: http://commerce:8080
+      EDUZE_RUNTIME_CALLERS_COMMERCE: ${COMMERCE_SERVICE_TOKEN:?required}
+      COMMERCE_SERVICE_TOKEN: ${COMMERCE_SERVICE_TOKEN:?required}
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ecs
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      identity:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -fsS
+      - http://localhost:8080/actuator/health
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+  teaching:
+    image: eduze-teaching:${TEACHING_IMAGE_TAG:-${PLATFORM_VERSION:-local}}
+    build:
+      context: ../..
+      dockerfile: docker/platform/Service.Dockerfile
+      args:
+        SERVICE: teaching-service
+    restart: unless-stopped
+    mem_limit: 640m
+    environment:
+      SERVER_PORT: '8080'
+      SPRING_PROFILES_ACTIVE: ${PLATFORM_PROFILE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eduze_teaching?connectionTimeZone=Asia/Shanghai&forceConnectionTimeZoneToSession=true&characterEncoding=utf8
+      SPRING_DATASOURCE_USERNAME: eduze_teaching
+      SPRING_DATASOURCE_PASSWORD: ${TEACHING_DB_PASSWORD:?required}
+      DB_PASSWORD: ${TEACHING_DB_PASSWORD:?required}
+      SERVICE_TOKEN: ${TEACHING_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICE_NAME: teaching
+      EDUZE_RUNTIME_SERVICE_TOKEN: ${TEACHING_SERVICE_TOKEN:?required}
+      SPRING_FLYWAY_LOCATIONS: classpath:db/runtime,classpath:db/migration
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Shanghai -XX:MaxRAMPercentage=65.0 -XX:+ExitOnOutOfMemoryError
+      EDUZE_RUNTIME_SERVICES_IDENTITY: http://identity:8080
+      EDUZE_RUNTIME_CALLERS_IDENTITY: ${IDENTITY_SERVICE_TOKEN:?required}
+      IDENTITY_SERVICE_TOKEN: ${IDENTITY_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_ACADEMIC: http://academic:8080
+      EDUZE_RUNTIME_CALLERS_ACADEMIC: ${ACADEMIC_SERVICE_TOKEN:?required}
+      ACADEMIC_SERVICE_TOKEN: ${ACADEMIC_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_TEACHING: http://teaching:8080
+      EDUZE_RUNTIME_CALLERS_TEACHING: ${TEACHING_SERVICE_TOKEN:?required}
+      TEACHING_SERVICE_TOKEN: ${TEACHING_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_PORTFOLIO: http://portfolio:8080
+      EDUZE_RUNTIME_CALLERS_PORTFOLIO: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      PORTFOLIO_SERVICE_TOKEN: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_MEDIA: http://media:8080
+      EDUZE_RUNTIME_CALLERS_MEDIA: ${MEDIA_SERVICE_TOKEN:?required}
+      MEDIA_SERVICE_TOKEN: ${MEDIA_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_NOTIFICATION: http://notification:8080
+      EDUZE_RUNTIME_CALLERS_NOTIFICATION: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      NOTIFICATION_SERVICE_TOKEN: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_ENGAGEMENT: http://engagement:8080
+      EDUZE_RUNTIME_CALLERS_ENGAGEMENT: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      ENGAGEMENT_SERVICE_TOKEN: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_COMMERCE: http://commerce:8080
+      EDUZE_RUNTIME_CALLERS_COMMERCE: ${COMMERCE_SERVICE_TOKEN:?required}
+      COMMERCE_SERVICE_TOKEN: ${COMMERCE_SERVICE_TOKEN:?required}
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ecs
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus
+    depends_on:
+      mysql:
+        condition: service_healthy
+      identity:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -fsS
+      - http://localhost:8080/actuator/health
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+  portfolio:
+    image: eduze-portfolio:${PORTFOLIO_IMAGE_TAG:-${PLATFORM_VERSION:-local}}
+    build:
+      context: ../..
+      dockerfile: docker/platform/Service.Dockerfile
+      args:
+        SERVICE: portfolio-service
+    restart: unless-stopped
+    mem_limit: 640m
+    environment:
+      SERVER_PORT: '8080'
+      SPRING_PROFILES_ACTIVE: ${PLATFORM_PROFILE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eduze_portfolio?connectionTimeZone=Asia/Shanghai&forceConnectionTimeZoneToSession=true&characterEncoding=utf8
+      SPRING_DATASOURCE_USERNAME: eduze_portfolio
+      SPRING_DATASOURCE_PASSWORD: ${PORTFOLIO_DB_PASSWORD:?required}
+      DB_PASSWORD: ${PORTFOLIO_DB_PASSWORD:?required}
+      SERVICE_TOKEN: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICE_NAME: portfolio
+      EDUZE_RUNTIME_SERVICE_TOKEN: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      SPRING_FLYWAY_LOCATIONS: classpath:db/runtime,classpath:db/migration
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Shanghai -XX:MaxRAMPercentage=65.0 -XX:+ExitOnOutOfMemoryError
+      EDUZE_RUNTIME_SERVICES_IDENTITY: http://identity:8080
+      EDUZE_RUNTIME_CALLERS_IDENTITY: ${IDENTITY_SERVICE_TOKEN:?required}
+      IDENTITY_SERVICE_TOKEN: ${IDENTITY_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_ACADEMIC: http://academic:8080
+      EDUZE_RUNTIME_CALLERS_ACADEMIC: ${ACADEMIC_SERVICE_TOKEN:?required}
+      ACADEMIC_SERVICE_TOKEN: ${ACADEMIC_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_TEACHING: http://teaching:8080
+      EDUZE_RUNTIME_CALLERS_TEACHING: ${TEACHING_SERVICE_TOKEN:?required}
+      TEACHING_SERVICE_TOKEN: ${TEACHING_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_PORTFOLIO: http://portfolio:8080
+      EDUZE_RUNTIME_CALLERS_PORTFOLIO: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      PORTFOLIO_SERVICE_TOKEN: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_MEDIA: http://media:8080
+      EDUZE_RUNTIME_CALLERS_MEDIA: ${MEDIA_SERVICE_TOKEN:?required}
+      MEDIA_SERVICE_TOKEN: ${MEDIA_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_NOTIFICATION: http://notification:8080
+      EDUZE_RUNTIME_CALLERS_NOTIFICATION: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      NOTIFICATION_SERVICE_TOKEN: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_ENGAGEMENT: http://engagement:8080
+      EDUZE_RUNTIME_CALLERS_ENGAGEMENT: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      ENGAGEMENT_SERVICE_TOKEN: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_COMMERCE: http://commerce:8080
+      EDUZE_RUNTIME_CALLERS_COMMERCE: ${COMMERCE_SERVICE_TOKEN:?required}
+      COMMERCE_SERVICE_TOKEN: ${COMMERCE_SERVICE_TOKEN:?required}
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ecs
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus
+    depends_on:
+      mysql:
+        condition: service_healthy
+      identity:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -fsS
+      - http://localhost:8080/actuator/health
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+  media:
+    image: eduze-media:${MEDIA_IMAGE_TAG:-${PLATFORM_VERSION:-local}}
+    build:
+      context: ../..
+      dockerfile: docker/platform/Service.Dockerfile
+      args:
+        SERVICE: media-service
+    restart: unless-stopped
+    mem_limit: 640m
+    environment:
+      SERVER_PORT: '8080'
+      SPRING_PROFILES_ACTIVE: ${PLATFORM_PROFILE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eduze_media?connectionTimeZone=Asia/Shanghai&forceConnectionTimeZoneToSession=true&characterEncoding=utf8
+      SPRING_DATASOURCE_USERNAME: eduze_media
+      SPRING_DATASOURCE_PASSWORD: ${MEDIA_DB_PASSWORD:?required}
+      DB_PASSWORD: ${MEDIA_DB_PASSWORD:?required}
+      SERVICE_TOKEN: ${MEDIA_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICE_NAME: media
+      EDUZE_RUNTIME_SERVICE_TOKEN: ${MEDIA_SERVICE_TOKEN:?required}
+      SPRING_FLYWAY_LOCATIONS: classpath:db/runtime,classpath:db/migration
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Shanghai -XX:MaxRAMPercentage=65.0 -XX:+ExitOnOutOfMemoryError
+      EDUZE_RUNTIME_SERVICES_IDENTITY: http://identity:8080
+      EDUZE_RUNTIME_CALLERS_IDENTITY: ${IDENTITY_SERVICE_TOKEN:?required}
+      IDENTITY_SERVICE_TOKEN: ${IDENTITY_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_ACADEMIC: http://academic:8080
+      EDUZE_RUNTIME_CALLERS_ACADEMIC: ${ACADEMIC_SERVICE_TOKEN:?required}
+      ACADEMIC_SERVICE_TOKEN: ${ACADEMIC_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_TEACHING: http://teaching:8080
+      EDUZE_RUNTIME_CALLERS_TEACHING: ${TEACHING_SERVICE_TOKEN:?required}
+      TEACHING_SERVICE_TOKEN: ${TEACHING_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_PORTFOLIO: http://portfolio:8080
+      EDUZE_RUNTIME_CALLERS_PORTFOLIO: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      PORTFOLIO_SERVICE_TOKEN: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_MEDIA: http://media:8080
+      EDUZE_RUNTIME_CALLERS_MEDIA: ${MEDIA_SERVICE_TOKEN:?required}
+      MEDIA_SERVICE_TOKEN: ${MEDIA_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_NOTIFICATION: http://notification:8080
+      EDUZE_RUNTIME_CALLERS_NOTIFICATION: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      NOTIFICATION_SERVICE_TOKEN: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      OSS_ENDPOINT: ${OSS_ENDPOINT:-}
+      OSS_BUCKET: ${OSS_BUCKET:-}
+      OSS_ACCESS_KEY_ID: ${OSS_ACCESS_KEY_ID:-}
+      OSS_ACCESS_KEY_SECRET: ${OSS_ACCESS_KEY_SECRET:-}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:18880}
+      EDUZE_RUNTIME_SERVICES_ENGAGEMENT: http://engagement:8080
+      EDUZE_RUNTIME_CALLERS_ENGAGEMENT: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      ENGAGEMENT_SERVICE_TOKEN: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_COMMERCE: http://commerce:8080
+      EDUZE_RUNTIME_CALLERS_COMMERCE: ${COMMERCE_SERVICE_TOKEN:?required}
+      COMMERCE_SERVICE_TOKEN: ${COMMERCE_SERVICE_TOKEN:?required}
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ecs
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus
+    depends_on:
+      mysql:
+        condition: service_healthy
+      identity:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -fsS
+      - http://localhost:8080/actuator/health
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    volumes:
+    - platform_media:/data/media
+  notification:
+    image: eduze-notification:${NOTIFICATION_IMAGE_TAG:-${PLATFORM_VERSION:-local}}
+    build:
+      context: ../..
+      dockerfile: docker/platform/Service.Dockerfile
+      args:
+        SERVICE: notification-service
+    restart: unless-stopped
+    mem_limit: 640m
+    environment:
+      SERVER_PORT: '8080'
+      SPRING_PROFILES_ACTIVE: ${PLATFORM_PROFILE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eduze_notification?connectionTimeZone=Asia/Shanghai&forceConnectionTimeZoneToSession=true&characterEncoding=utf8
+      SPRING_DATASOURCE_USERNAME: eduze_notification
+      SPRING_DATASOURCE_PASSWORD: ${NOTIFICATION_DB_PASSWORD:?required}
+      DB_PASSWORD: ${NOTIFICATION_DB_PASSWORD:?required}
+      SERVICE_TOKEN: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICE_NAME: notification
+      EDUZE_RUNTIME_SERVICE_TOKEN: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      SPRING_FLYWAY_LOCATIONS: classpath:db/runtime,classpath:db/migration
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Shanghai -XX:MaxRAMPercentage=65.0 -XX:+ExitOnOutOfMemoryError
+      EDUZE_RUNTIME_SERVICES_IDENTITY: http://identity:8080
+      EDUZE_RUNTIME_CALLERS_IDENTITY: ${IDENTITY_SERVICE_TOKEN:?required}
+      IDENTITY_SERVICE_TOKEN: ${IDENTITY_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_ACADEMIC: http://academic:8080
+      EDUZE_RUNTIME_CALLERS_ACADEMIC: ${ACADEMIC_SERVICE_TOKEN:?required}
+      ACADEMIC_SERVICE_TOKEN: ${ACADEMIC_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_TEACHING: http://teaching:8080
+      EDUZE_RUNTIME_CALLERS_TEACHING: ${TEACHING_SERVICE_TOKEN:?required}
+      TEACHING_SERVICE_TOKEN: ${TEACHING_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_PORTFOLIO: http://portfolio:8080
+      EDUZE_RUNTIME_CALLERS_PORTFOLIO: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      PORTFOLIO_SERVICE_TOKEN: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_MEDIA: http://media:8080
+      EDUZE_RUNTIME_CALLERS_MEDIA: ${MEDIA_SERVICE_TOKEN:?required}
+      MEDIA_SERVICE_TOKEN: ${MEDIA_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_NOTIFICATION: http://notification:8080
+      EDUZE_RUNTIME_CALLERS_NOTIFICATION: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      NOTIFICATION_SERVICE_TOKEN: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      WECHAT_APP_ID: ${WECHAT_APP_ID:-}
+      WECHAT_APP_SECRET: ${WECHAT_APP_SECRET:-}
+      WECHAT_SECRET: ${WECHAT_APP_SECRET:-}
+      EDUZE_RUNTIME_SERVICES_ENGAGEMENT: http://engagement:8080
+      EDUZE_RUNTIME_CALLERS_ENGAGEMENT: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      ENGAGEMENT_SERVICE_TOKEN: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_COMMERCE: http://commerce:8080
+      EDUZE_RUNTIME_CALLERS_COMMERCE: ${COMMERCE_SERVICE_TOKEN:?required}
+      COMMERCE_SERVICE_TOKEN: ${COMMERCE_SERVICE_TOKEN:?required}
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ecs
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus
+    depends_on:
+      mysql:
+        condition: service_healthy
+      identity:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -fsS
+      - http://localhost:8080/actuator/health
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+  web:
+    image: eduze-web:${WEB_IMAGE_TAG:-${PLATFORM_VERSION:-local}}
+    build:
+      context: ../..
+      dockerfile: docker/platform/Web.Dockerfile
+    restart: unless-stopped
+    mem_limit: 128m
+  gateway:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    mem_limit: 128m
+    ports:
+    - 127.0.0.1:${PLATFORM_HTTP_PORT:-18880}:8080
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      identity:
+        condition: service_healthy
+      academic:
+        condition: service_healthy
+      teaching:
+        condition: service_healthy
+      portfolio:
+        condition: service_healthy
+      media:
+        condition: service_healthy
+      notification:
+        condition: service_healthy
+      web:
+        condition: service_started
+      engagement:
+        condition: service_healthy
+      commerce:
+        condition: service_healthy
+  engagement:
+    image: eduze-engagement:${ENGAGEMENT_IMAGE_TAG:-${PLATFORM_VERSION:-local}}
+    build:
+      context: ../..
+      dockerfile: docker/platform/Service.Dockerfile
+      args:
+        SERVICE: engagement-service
+    restart: unless-stopped
+    mem_limit: 640m
+    environment:
+      SERVER_PORT: '8080'
+      SPRING_PROFILES_ACTIVE: ${PLATFORM_PROFILE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eduze_engagement?connectionTimeZone=Asia/Shanghai&forceConnectionTimeZoneToSession=true&characterEncoding=utf8
+      SPRING_DATASOURCE_USERNAME: eduze_engagement
+      SPRING_DATASOURCE_PASSWORD: ${ENGAGEMENT_DB_PASSWORD:?required}
+      DB_PASSWORD: ${ENGAGEMENT_DB_PASSWORD:?required}
+      SERVICE_TOKEN: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICE_NAME: engagement
+      EDUZE_RUNTIME_SERVICE_TOKEN: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      SPRING_FLYWAY_LOCATIONS: classpath:db/runtime,classpath:db/migration
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Shanghai -XX:MaxRAMPercentage=65.0 -XX:+ExitOnOutOfMemoryError
+      EDUZE_RUNTIME_SERVICES_IDENTITY: http://identity:8080
+      EDUZE_RUNTIME_CALLERS_IDENTITY: ${IDENTITY_SERVICE_TOKEN:?required}
+      IDENTITY_SERVICE_TOKEN: ${IDENTITY_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_ACADEMIC: http://academic:8080
+      EDUZE_RUNTIME_CALLERS_ACADEMIC: ${ACADEMIC_SERVICE_TOKEN:?required}
+      ACADEMIC_SERVICE_TOKEN: ${ACADEMIC_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_TEACHING: http://teaching:8080
+      EDUZE_RUNTIME_CALLERS_TEACHING: ${TEACHING_SERVICE_TOKEN:?required}
+      TEACHING_SERVICE_TOKEN: ${TEACHING_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_PORTFOLIO: http://portfolio:8080
+      EDUZE_RUNTIME_CALLERS_PORTFOLIO: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      PORTFOLIO_SERVICE_TOKEN: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_MEDIA: http://media:8080
+      EDUZE_RUNTIME_CALLERS_MEDIA: ${MEDIA_SERVICE_TOKEN:?required}
+      MEDIA_SERVICE_TOKEN: ${MEDIA_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_NOTIFICATION: http://notification:8080
+      EDUZE_RUNTIME_CALLERS_NOTIFICATION: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      NOTIFICATION_SERVICE_TOKEN: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_ENGAGEMENT: http://engagement:8080
+      EDUZE_RUNTIME_CALLERS_ENGAGEMENT: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      ENGAGEMENT_SERVICE_TOKEN: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_COMMERCE: http://commerce:8080
+      EDUZE_RUNTIME_CALLERS_COMMERCE: ${COMMERCE_SERVICE_TOKEN:?required}
+      COMMERCE_SERVICE_TOKEN: ${COMMERCE_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SECURITY_PUBLIC_ENQUIRIES_ENABLED: 'true'
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ecs
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus
+    depends_on:
+      mysql:
+        condition: service_healthy
+      identity:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -fsS
+      - http://localhost:8080/actuator/health
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+  commerce:
+    image: eduze-commerce:${COMMERCE_IMAGE_TAG:-${PLATFORM_VERSION:-local}}
+    build:
+      context: ../..
+      dockerfile: docker/platform/Service.Dockerfile
+      args:
+        SERVICE: commerce-service
+    restart: unless-stopped
+    mem_limit: 640m
+    environment:
+      SERVER_PORT: '8080'
+      SPRING_PROFILES_ACTIVE: ${PLATFORM_PROFILE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eduze_commerce?connectionTimeZone=Asia/Shanghai&forceConnectionTimeZoneToSession=true&characterEncoding=utf8
+      SPRING_DATASOURCE_USERNAME: eduze_commerce
+      SPRING_DATASOURCE_PASSWORD: ${COMMERCE_DB_PASSWORD:?required}
+      DB_PASSWORD: ${COMMERCE_DB_PASSWORD:?required}
+      SERVICE_TOKEN: ${COMMERCE_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICE_NAME: commerce
+      EDUZE_RUNTIME_SERVICE_TOKEN: ${COMMERCE_SERVICE_TOKEN:?required}
+      SPRING_FLYWAY_LOCATIONS: classpath:db/runtime,classpath:db/migration
+      JAVA_TOOL_OPTIONS: -Duser.timezone=Asia/Shanghai -XX:MaxRAMPercentage=65.0 -XX:+ExitOnOutOfMemoryError
+      EDUZE_RUNTIME_SERVICES_IDENTITY: http://identity:8080
+      EDUZE_RUNTIME_CALLERS_IDENTITY: ${IDENTITY_SERVICE_TOKEN:?required}
+      IDENTITY_SERVICE_TOKEN: ${IDENTITY_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_ACADEMIC: http://academic:8080
+      EDUZE_RUNTIME_CALLERS_ACADEMIC: ${ACADEMIC_SERVICE_TOKEN:?required}
+      ACADEMIC_SERVICE_TOKEN: ${ACADEMIC_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_TEACHING: http://teaching:8080
+      EDUZE_RUNTIME_CALLERS_TEACHING: ${TEACHING_SERVICE_TOKEN:?required}
+      TEACHING_SERVICE_TOKEN: ${TEACHING_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_PORTFOLIO: http://portfolio:8080
+      EDUZE_RUNTIME_CALLERS_PORTFOLIO: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      PORTFOLIO_SERVICE_TOKEN: ${PORTFOLIO_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_MEDIA: http://media:8080
+      EDUZE_RUNTIME_CALLERS_MEDIA: ${MEDIA_SERVICE_TOKEN:?required}
+      MEDIA_SERVICE_TOKEN: ${MEDIA_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_NOTIFICATION: http://notification:8080
+      EDUZE_RUNTIME_CALLERS_NOTIFICATION: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      NOTIFICATION_SERVICE_TOKEN: ${NOTIFICATION_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_ENGAGEMENT: http://engagement:8080
+      EDUZE_RUNTIME_CALLERS_ENGAGEMENT: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      ENGAGEMENT_SERVICE_TOKEN: ${ENGAGEMENT_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SERVICES_COMMERCE: http://commerce:8080
+      EDUZE_RUNTIME_CALLERS_COMMERCE: ${COMMERCE_SERVICE_TOKEN:?required}
+      COMMERCE_SERVICE_TOKEN: ${COMMERCE_SERVICE_TOKEN:?required}
+      EDUZE_RUNTIME_SECURITY_PAYMENT_CALLBACKS_ENABLED: 'true'
+      WECHAT_PAY_APP_ID: ${WECHAT_PAY_APP_ID:-}
+      WECHAT_PAY_MCH_ID: ${WECHAT_PAY_MCH_ID:-}
+      WECHAT_PAY_MERCHANT_SERIAL: ${WECHAT_PAY_MERCHANT_SERIAL:-}
+      WECHAT_PAY_PRIVATE_KEY_PATH: ${WECHAT_PAY_PRIVATE_KEY_PATH:-}
+      WECHAT_PAY_PLATFORM_SERIAL: ${WECHAT_PAY_PLATFORM_SERIAL:-}
+      WECHAT_PAY_PLATFORM_KEY_PATH: ${WECHAT_PAY_PLATFORM_KEY_PATH:-}
+      WECHAT_PAY_API_V3_KEY: ${WECHAT_PAY_API_V3_KEY:-}
+      WECHAT_PAY_NOTIFY_BASE_URL: ${WECHAT_PAY_NOTIFY_BASE_URL:-}
+      LOGGING_STRUCTURED_FORMAT_CONSOLE: ecs
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus
+    depends_on:
+      mysql:
+        condition: service_healthy
+      identity:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -fsS
+      - http://localhost:8080/actuator/health
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    volumes:
+    - ./payment-keys:/run/payment-keys:ro
+volumes:
+  platform_mysql: {}
+  platform_redis: {}
+  platform_media: {}

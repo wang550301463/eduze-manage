@@ -47,3 +47,20 @@ web/playwright-report/
 
 # Git worktrees
 .worktrees/
+
+# Platform local credentials and generated clients
+docker/platform/.env*
+!docker/platform/.env.example
+docker/platform/certs/
+miniapp/node_modules/
+miniapp/dist/
+miniapp/miniprogram/
+miniapp/project.private.config.json
+packages/*/node_modules/
+storage/
+
+docker/platform/payment-keys/
+
+# Python validation caches
+__pycache__/
+*.pyc

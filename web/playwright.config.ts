@@ -10,6 +10,7 @@ export default defineConfig({
   timeout: 30_000,
   use: {
     baseURL: 'http://localhost:5173',
+    channel: process.env.PLAYWRIGHT_CHANNEL || undefined,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

@@ -1,0 +1,27 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/teacher/index",
+    "pages/record/index",
+    "pages/family/index",
+    "pages/messages/index",
+    "pages/exhibitions/index",
+    "pages/studio/index",
+    "pages/shop/index",
+    "pages/orders/index",
+    "pages/growth/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "画室成长",
+    "navigationBarBackgroundColor": "#f4f5ef",
+    "backgroundColor": "#f4f5ef",
+    "navigationBarTextStyle": "black"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "permission": {
+    "scope.record": {
+      "desc": "用于老师记录课堂原始语音观察"
+    }
+  }
+}
