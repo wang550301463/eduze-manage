@@ -18,6 +18,8 @@
 
 OSS Bucket 保持私有，上传与读取分开签名。允许的浏览器来源和微信上传／下载域名需要按画室实际域名配置。建议为 `staging/` 对象前缀设置一天后清理的生命周期；正式归档对象不得套用该规则。业务数据库保存媒体元数据与引用，OSS 备份应启用版本保留策略；备份范围同时覆盖数据库和媒体。
 
+ECS 与 OSS 同地域时，`OSS_ENDPOINT` 可以使用 HTTPS 内网节点，供服务端校验、封存和删除文件；另将 `OSS_PUBLIC_ENDPOINT` 配为 HTTPS 公网节点，供浏览器和小程序使用签名上传、原图及缩略图地址。例如上海地域分别使用 `https://oss-cn-shanghai-internal.aliyuncs.com` 与 `https://oss-cn-shanghai.aliyuncs.com`。端点填写地域节点，Bucket 名独立放在 `OSS_BUCKET`，不要重复拼接 Bucket。公网端点未配置时回退到 `OSS_ENDPOINT`；回退到内网节点会拒绝启动，避免签发用户无法访问的地址。
+
 微信发送模板配置放在 `eduze.wechat.templates` 下，键为 `LESSON_REMINDER`、`LESSON_CHANGED`、`LEAVE_RESULT`、`PORTFOLIO_PUBLISHED`；每项包含 `template-id` 和 `fields`（微信字段名映射到 `title`／`body`）。实际模板应匹配合法类目、长度与订阅权限。未配置或未订阅会记录 SKIPPED，不显示微信发送成功。发送结果未知不自动重放，需核实后处理。
 
 正式启动示例：

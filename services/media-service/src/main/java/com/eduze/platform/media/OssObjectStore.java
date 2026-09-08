@@ -18,14 +18,18 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(name = "eduze.media.provider", havingValue = "oss", matchIfMissing = true)
 public class OssObjectStore implements ObjectStore {
     private final OSS client;
+    private final OSS signingClient;
     private final String bucket;
 
     public OssObjectStore(
             @Value("${OSS_ENDPOINT}") String endpoint,
+            @Value("${OSS_PUBLIC_ENDPOINT:${OSS_ENDPOINT}}") String publicEndpoint,
             @Value("${OSS_ACCESS_KEY_ID}") String accessId,
             @Value("${OSS_ACCESS_KEY_SECRET}") String accessSecret,
             @Value("${OSS_BUCKET}") String bucket) {
         if (!endpoint.startsWith("https://")
+                || !publicEndpoint.startsWith("https://")
+                || publicEndpoint.contains("-internal.aliyuncs.com")
                 || bucket.isBlank()
                 || accessId.isBlank()
                 || accessSecret.isBlank()) {
@@ -38,6 +42,11 @@ public class OssObjectStore implements ObjectStore {
         config.setSocketTimeout(10000);
         config.setMaxErrorRetry(1);
         client = new OSSClientBuilder().build(endpoint, accessId, accessSecret, config);
+        signingClient =
+                endpoint.equals(publicEndpoint)
+                        ? client
+                        : new OSSClientBuilder()
+                                .build(publicEndpoint, accessId, accessSecret, config);
     }
 
     public Upload upload(String id, String key, String type, Instant expiresAt) {
@@ -46,7 +55,7 @@ public class OssObjectStore implements ObjectStore {
         request.setExpiration(Date.from(expiresAt));
         request.setContentType(type);
         return new Upload(
-                client.generatePresignedUrl(request).toString(),
+                signingClient.generatePresignedUrl(request).toString(),
                 "PUT",
                 Map.of("Content-Type", type));
     }
@@ -74,7 +83,7 @@ public class OssObjectStore implements ObjectStore {
         if (thumbnail) {
             request.setProcess("image/resize,w_480/auto-orient,1/format,webp");
         }
-        return client.generatePresignedUrl(request).toString();
+        return signingClient.generatePresignedUrl(request).toString();
     }
 
     public void seal(String sourceKey, String sealedKey) {
@@ -87,6 +96,9 @@ public class OssObjectStore implements ObjectStore {
 
     @PreDestroy
     public void close() {
+        if (signingClient != client) {
+            signingClient.shutdown();
+        }
         client.shutdown();
     }
 }
