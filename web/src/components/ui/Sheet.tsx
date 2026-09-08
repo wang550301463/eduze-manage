@@ -1,11 +1,16 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from '@phosphor-icons/react';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { forwardRef, type ComponentPropsWithoutRef, type HTMLAttributes, type ReactNode } from 'react';
+import {
+  forwardRef,
+  type ComponentPropsWithoutRef,
+  type HTMLAttributes,
+  type ReactNode,
+} from 'react';
 import { cn } from '@/lib/cn';
 
 const sheetVariants = cva(
-  'fixed z-50 flex flex-col gap-4 border border-border bg-card shadow-sm transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-300',
+  'fixed z-50 flex flex-col gap-4 border border-white/80 bg-white/95 shadow-2xl backdrop-blur-2xl transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-300',
   {
     variants: {
       side: {
@@ -28,7 +33,7 @@ export const SheetOverlay = forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
-    className={cn('fixed inset-0 z-50 bg-foreground/40 backdrop-blur-sm', className)}
+    className={cn('fixed inset-0 z-50 bg-foreground/20 backdrop-blur-sm', className)}
     {...props}
   />
 ));
@@ -43,6 +48,7 @@ export const SheetContent = forwardRef<HTMLDivElement, SheetContentProps>(
       <SheetOverlay />
       <DialogPrimitive.Content
         ref={ref}
+        aria-describedby={undefined}
         data-side={side}
         className={cn(sheetVariants({ side }), className)}
         {...props}
@@ -61,7 +67,9 @@ export const SheetContent = forwardRef<HTMLDivElement, SheetContentProps>(
 SheetContent.displayName = 'SheetContent';
 
 export function SheetHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>): JSX.Element {
-  return <div className={cn('flex flex-col gap-1.5 border-b border-border p-6', className)} {...props} />;
+  return (
+    <div className={cn('flex flex-col gap-1.5 border-b border-border p-6', className)} {...props} />
+  );
 }
 
 export function SheetBody({ className, ...props }: HTMLAttributes<HTMLDivElement>): JSX.Element {
@@ -78,9 +86,7 @@ export function SheetTitle({
   className,
   ...props
 }: ComponentPropsWithoutRef<typeof DialogPrimitive.Title>): JSX.Element {
-  return (
-    <DialogPrimitive.Title className={cn('text-lg font-semibold', className)} {...props} />
-  );
+  return <DialogPrimitive.Title className={cn('text-lg font-semibold', className)} {...props} />;
 }
 
 type SheetFrameProps = {

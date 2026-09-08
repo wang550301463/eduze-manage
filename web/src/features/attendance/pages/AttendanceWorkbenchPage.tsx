@@ -18,7 +18,8 @@ import { cn } from '@/lib/cn';
 import { toast } from '@/lib/toast';
 
 export function AttendanceWorkbenchPage(): JSX.Element {
-  const branches = useAuthStore((s) => s.user?.branches ?? []);
+  const user = useAuthStore((s) => s.user);
+  const branches = user?.branches ?? [];
   const [branchId, setBranchId] = useState(String(branches[0]?.id ?? 1));
   const [period, setPeriod] = useState<DayPeriod>('morning');
   const [date, setDate] = useState<Date | undefined>(new Date());

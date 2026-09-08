@@ -1,104 +1,104 @@
-import { CaretLeft, CaretRight } from '@phosphor-icons/react';
+import { SidebarSimple } from '@phosphor-icons/react';
 import { NavLink } from 'react-router-dom';
-import { RequirePermission } from '@/components/auth/RequirePermission';
 import { Button } from '@/components/ui/Button';
 import { mainNavItems, navItemEnd, settingsNavItems } from '@/app/shell/nav-config';
+import { Brand } from '@/app/shell/Brand';
 import { useAuthStore } from '@/features/auth/store';
+import { prefersTeachingHome } from '@/features/dashboard/home-role';
 import { cn } from '@/lib/cn';
 
-type SidebarProps = {
-  className?: string;
-};
-
-function NavSection({
-  title,
-  collapsed,
-}: {
-  title: string;
-  collapsed: boolean;
-}): JSX.Element | null {
-  if (collapsed) return null;
-  return (
-    <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wide text-muted-fg">{title}</p>
-  );
-}
-
-export function Sidebar({ className }: SidebarProps): JSX.Element {
+export function Sidebar({ className }: { className?: string }): JSX.Element {
   const collapsed = useAuthStore((s) => s.sidebarCollapsed);
   const setCollapsed = useAuthStore((s) => s.setSidebarCollapsed);
-
+  const user = useAuthStore((s) => s.user);
+  const roles = user?.roles ?? [];
+  const permissions = useAuthStore((s) => s.permissions);
+  const groups = [
+    {
+      title: '工作空间',
+      items: mainNavItems.filter((item) => ['/', '/workbench'].includes(item.path)),
+    },
+    {
+      title: '日常教学',
+      items: mainNavItems.filter((item) =>
+        ['/schedule', '/attendance', '/attendance/leaves', '/students', '/lesson-history'].includes(
+          item.path,
+        ),
+      ),
+    },
+    {
+      title: '教学资源',
+      items: mainNavItems.filter((item) =>
+        ['/teachers/availabilities', '/courses', '/courses/class-groups'].includes(item.path),
+      ),
+    },
+    { title: '机构设置', items: settingsNavItems },
+  ];
   return (
     <aside
-      className={cn(
-        'hidden h-full shrink-0 flex-col border-r border-border/80 bg-[#F2F2F7] lg:flex',
-        collapsed ? 'w-16' : 'w-[210px]',
-        className,
-      )}
+      className={cn('studio-sidebar', collapsed ? 'w-[72px]' : 'w-[224px]', className)}
       aria-label="主导航"
     >
-      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-2">
-        {mainNavItems.map((item) => (
-          <RequirePermission key={item.path} perm={item.permission}>
-            <NavLink
-              to={item.path}
-              end={navItemEnd(item.path)}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-3 rounded-[10px] px-3 py-2 text-sm transition-colors',
-                  isActive
-                    ? 'bg-primary font-medium text-primary-fg'
-                    : 'text-foreground/80 hover:bg-muted',
-                )
-              }
-              aria-current={undefined}
-            >
-              {({ isActive }) => (
-                <>
-                  <item.icon className="h-5 w-5 shrink-0" weight={isActive ? 'fill' : 'regular'} />
-                  {!collapsed ? <span>{item.label}</span> : null}
-                </>
-              )}
-            </NavLink>
-          </RequirePermission>
-        ))}
-
-        <div className="my-2 border-t border-border" />
-        <NavSection title="系统" collapsed={collapsed} />
-        {settingsNavItems.map((item) => (
-          <RequirePermission key={item.path} perm={item.permission}>
-            <NavLink
-              to={item.path}
-              end={navItemEnd(item.path)}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-3 rounded-[10px] px-3 py-2 text-sm transition-colors',
-                  isActive
-                    ? 'bg-primary font-medium text-primary-fg'
-                    : 'text-foreground/80 hover:bg-muted',
-                )
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  <item.icon className="h-5 w-5 shrink-0" weight={isActive ? 'fill' : 'regular'} />
-                  {!collapsed ? <span>{item.label}</span> : null}
-                </>
-              )}
-            </NavLink>
-          </RequirePermission>
-        ))}
+      <Brand
+        collapsed={collapsed}
+        className={cn('h-[88px] shrink-0', collapsed ? 'justify-center' : 'px-5')}
+      />
+      <nav className="flex-1 space-y-5 overflow-y-auto px-3 pb-5">
+        {groups.map((group) => {
+          const items = group.items.filter(
+            (item) =>
+              (!item.permission || permissions.includes(item.permission)) &&
+              (item.path !== '/workbench' ||
+                (roles.includes('TEACHER') && !prefersTeachingHome(roles))),
+          );
+          if (!items.length) return null;
+          return (
+            <div key={group.title}>
+              {!collapsed && <p className="studio-section-label mb-2">{group.title}</p>}
+              <div className="space-y-1">
+                {items.map((item) => (
+                  <NavLink
+                    key={item.path}
+                    to={item.path}
+                    end={navItemEnd(item.path)}
+                    title={collapsed ? item.label : undefined}
+                    aria-label={item.label}
+                    className={({ isActive }) =>
+                      cn(
+                        'studio-nav',
+                        isActive && 'studio-nav-active',
+                        collapsed && 'justify-center px-0',
+                      )
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <item.icon
+                          className="h-[19px] w-[19px] shrink-0"
+                          weight={isActive ? 'duotone' : 'regular'}
+                        />
+                        {!collapsed && <span>{item.label}</span>}
+                      </>
+                    )}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </nav>
-
-      <div className="border-t border-border p-2">
+      <div className="mx-3 flex items-center justify-between border-t border-black/5 py-3">
+        {!collapsed && (
+          <span className="pl-2 text-[10px] tracking-wider text-muted-fg">给创造力，一点空间</span>
+        )}
         <Button
-          type="button"
           variant="ghost"
           size="sm"
-          className="w-full justify-center"
+          className={collapsed ? 'w-full' : 'px-2'}
           onClick={() => setCollapsed(!collapsed)}
           aria-label={collapsed ? '展开侧边栏' : '折叠侧边栏'}
         >
-          {collapsed ? <CaretRight className="h-4 w-4" /> : <CaretLeft className="h-4 w-4" />}
+          <SidebarSimple className="h-[18px] w-[18px]" />
         </Button>
       </div>
     </aside>

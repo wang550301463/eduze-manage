@@ -249,6 +249,7 @@ export function StudentListPage(): JSX.Element {
       />
       <StudentDetailSheet
         studentId={detailId}
+        guardianId={searchParams.get('openGuardianId')}
         open={detailId != null}
         onOpenChange={(o) => !o && closeDetail()}
         branches={branches}

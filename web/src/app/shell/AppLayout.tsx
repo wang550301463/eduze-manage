@@ -10,7 +10,7 @@ export function AppLayout(): JSX.Element {
   const { setPaletteOpen, setMobileNavOpen, helpOpen, setHelpOpen } = useShell();
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="studio-background studio-shell">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-fg"
@@ -19,12 +19,12 @@ export function AppLayout(): JSX.Element {
       </a>
       <Sidebar />
       <MobileNav />
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="studio-window">
         <Header
           onOpenSearch={() => setPaletteOpen(true)}
           onOpenMobileNav={() => setMobileNavOpen(true)}
         />
-        <main id="main" className="flex-1 overflow-y-auto p-4 md:p-6">
+        <main id="main" className="min-h-0 flex-1 overflow-y-auto p-4 md:p-7 lg:px-8">
           <Outlet />
         </main>
       </div>

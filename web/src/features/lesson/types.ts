@@ -1,13 +1,13 @@
 export type Lesson = {
-  id: number;
-  branchId: number;
-  classGroupId: number;
+  id: string | number;
+  branchId: string | number;
+  classGroupId: string | number;
   classGroupName?: string;
-  courseId?: number;
+  courseId?: string | number;
   courseName?: string;
-  classRoomId?: number;
+  classRoomId?: string | number;
   classRoomName?: string;
-  teacherId?: number;
+  teacherId?: string | number;
   teacherName?: string;
   startAt: string;
   endAt: string;

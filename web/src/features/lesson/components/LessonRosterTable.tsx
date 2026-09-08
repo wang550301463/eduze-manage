@@ -1,52 +1,59 @@
 import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { AttendanceRosterTable } from '@/features/attendance/components/AttendanceRosterTable';
-import { fetchTodayRoster } from '@/features/attendance/api';
-import type { RosterItem } from '@/features/attendance/types';
+import { scheduleApi } from '@/features/teacher/api';
 
-type Props = {
-  branchId: number;
-  lessonStartAt: string;
-  readOnly?: boolean;
-  onCheckIn?: (item: RosterItem) => void;
-  onCheckOut?: (item: RosterItem) => void;
+const STATUS_LABELS: Record<string, string> = {
+  BOOKED: '已预约',
+  CHECKED_IN: '已签到',
+  CHECKED_OUT: '已签退',
+  PRESENT: '已出勤',
+  ABSENT: '缺勤',
+  LEAVE: '请假',
+  CANCELLED: '已移出',
 };
 
-export function LessonRosterTable({
-  branchId,
-  lessonStartAt,
-  readOnly = true,
-  onCheckIn = () => undefined,
-  onCheckOut = () => undefined,
-}: Props): JSX.Element {
-  const date = lessonStartAt.slice(0, 10);
-  const hour = Number(lessonStartAt.slice(11, 13));
-  const period = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['lesson-roster', branchId, date, period],
-    queryFn: () => fetchTodayRoster({ branchId, period, date }),
+export function LessonRosterTable({ lessonId }: { lessonId: string | number }): JSX.Element {
+  const { data, isPending, isError, refetch } = useQuery({
+    queryKey: ['lesson-students', String(lessonId)],
+    queryFn: () => scheduleApi.lessonStudents(String(lessonId)),
   });
 
-  const items =
-    data?.items.filter((i) => i.lessonStartAt.startsWith(lessonStartAt.slice(0, 16))) ?? [];
-
-  if (isLoading) {
-    return <Skeleton className="h-40 w-full" />;
-  }
+  if (isPending) return <Skeleton className="h-32 w-full" />;
+  if (isError)
+    return (
+      <div role="alert" className="space-y-2 text-sm">
+        <p>学员名单加载失败</p>
+        <Button size="sm" variant="secondary" onClick={() => void refetch()}>
+          重试名单
+        </Button>
+      </div>
+    );
+  const items = data ?? [];
+  if (!items.length)
+    return <p className="rounded-xl bg-muted/50 p-5 text-center text-muted-fg">本节课暂无学员</p>;
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <p className="text-xs text-muted-fg">
-        课次 {format(new Date(lessonStartAt), 'yyyy-MM-dd HH:mm')} · {items.length} 人
+        本节课 {items.filter((item) => item.status !== 'CANCELLED').length} 名学员
       </p>
-      <AttendanceRosterTable
-        items={items}
-        readOnly={readOnly}
-        onCheckIn={onCheckIn}
-        onCheckOut={onCheckOut}
-      />
+      <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border">
+        {items.map((item) => (
+          <li key={item.id} className="flex items-center justify-between gap-3 px-4 py-3">
+            <Link
+              to={`/students?openId=${encodeURIComponent(item.studentId)}`}
+              className="font-medium text-primary hover:underline"
+            >
+              {item.studentName ?? '查看学员'}
+            </Link>
+            <span className="text-xs text-muted-fg">
+              {STATUS_LABELS[item.status] ?? item.status}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

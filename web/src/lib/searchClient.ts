@@ -5,7 +5,7 @@ export type SearchResultGroup = 'student' | 'guardian' | 'class' | 'lesson';
 
 export type SearchResult = {
   id: string;
-  entityId: number;
+  entityId: string;
   group: SearchResultGroup;
   title: string;
   subtitle?: string;
@@ -18,12 +18,12 @@ export type SearchResponse = {
 
 type BackendHit = {
   type: 'student' | 'guardian' | 'class_group' | 'lesson';
-  id: number;
+  id: string | number;
   title: string;
   subtitle?: string;
   url: string;
   branch?: string | null;
-  branchId?: number | null;
+  branchId?: string | number | null;
 };
 
 const GROUP_MAP: Record<BackendHit['type'], SearchResultGroup> = {
@@ -44,7 +44,7 @@ function mapHit(hit: BackendHit): SearchResult {
   const group = GROUP_MAP[hit.type];
   return {
     id: `${group}-${hit.id}`,
-    entityId: hit.id,
+    entityId: String(hit.id),
     group,
     title: hit.title,
     subtitle: hit.subtitle,
@@ -52,9 +52,14 @@ function mapHit(hit: BackendHit): SearchResult {
   };
 }
 
-export async function search(query: string, limit = 20): Promise<SearchResponse> {
+export async function search(
+  query: string,
+  limit = 20,
+  signal?: AbortSignal,
+): Promise<SearchResponse> {
   const { data: body } = await apiClient.get<ApiResponse<BackendHit[]>>('/search', {
     params: { q: query.trim(), limit },
+    signal,
   });
   const hits = body.data ?? [];
   return { results: hits.map(mapHit) };

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { DialogFrame } from '@/components/ui/Dialog';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -29,6 +29,7 @@ const TABS = ['基础', '家长', '课时包', '课时流水', '出勤', '请假
 
 type Props = {
   studentId: EntityId | null;
+  guardianId?: EntityId | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   branches: Branch[];
@@ -36,15 +37,20 @@ type Props = {
 
 export function StudentDetailSheet({
   studentId,
+  guardianId,
   open,
   onOpenChange,
   branches,
 }: Props): JSX.Element {
-  const [tab, setTab] = useState<(typeof TABS)[number]>('基础');
+  const [tab, setTab] = useState<(typeof TABS)[number]>(guardianId ? '家长' : '基础');
   const [editOpen, setEditOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const [confirmSuspend, setConfirmSuspend] = useState(false);
   const qc = useQueryClient();
+
+  useEffect(() => {
+    if (open) setTab(guardianId ? '家长' : '基础');
+  }, [open, studentId, guardianId]);
 
   const {
     data: student,
@@ -161,13 +167,22 @@ export function StudentDetailSheet({
                 {tab === '基础' ? (
                   <StudentBasicTab student={student} onEdit={() => setEditOpen(true)} />
                 ) : null}
-                {tab === '家长' ? <StudentGuardiansTab studentId={student.id} /> : null}
+                {tab === '家长' ? (
+                  <StudentGuardiansTab key={student.id} studentId={student.id} guardianId={guardianId} />
+                ) : null}
                 {tab === '课时包' ? <StudentPackagesTab studentId={student.id} /> : null}
                 {tab === '课时流水' ? (
                   <StudentLessonHourLedgerTab studentId={student.id} />
                 ) : null}
                 {tab === '出勤' ? <StudentAttendanceTab studentId={student.id} /> : null}
-                {tab === '请假' ? <StudentLeaveTab /> : null}
+                {tab === '请假' ? (
+                  <StudentLeaveTab
+                    key={student.id}
+                    studentId={student.id}
+                    studentName={student.name}
+                    enrollNo={student.enrollNo}
+                  />
+                ) : null}
               </div>
             </div>
           ) : null}

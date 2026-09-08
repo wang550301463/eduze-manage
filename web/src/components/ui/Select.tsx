@@ -14,7 +14,7 @@ export const SelectTrigger = forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      'flex h-9 w-full items-center justify-between rounded-[10px] border border-border bg-muted/60 px-3 text-sm',
+      'flex h-9 w-full items-center justify-between rounded-[10px] border border-border bg-white/75 shadow-sm px-3 text-sm',
       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
       'disabled:cursor-not-allowed disabled:opacity-50',
       className,
@@ -38,7 +38,7 @@ export const SelectContent = forwardRef<
       ref={ref}
       position={position}
       className={cn(
-        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-border bg-background shadow-lg',
+        'relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border border-border bg-white/95 backdrop-blur-xl shadow-lg',
         'data-[state=open]:animate-in data-[state=closed]:animate-out',
         'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
         className,
@@ -97,7 +97,7 @@ export function SimpleSelect({
   'aria-label': ariaLabel,
 }: SimpleSelectProps): JSX.Element {
   return (
-    <Select value={value || undefined} onValueChange={onValueChange}>
+    <Select value={value} onValueChange={onValueChange}>
       <SelectTrigger className={className} aria-label={ariaLabel}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>

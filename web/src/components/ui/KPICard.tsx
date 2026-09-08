@@ -1,4 +1,3 @@
-import CountUp from 'react-countup';
 import { CaretDown, CaretUp } from '@phosphor-icons/react';
 import { cn } from '@/lib/cn';
 
@@ -10,17 +9,18 @@ export type KPICardProps = {
   className?: string;
 };
 
-export function KPICard({ title, value, suffix = '', trend, className }: KPICardProps): JSX.Element {
+export function KPICard({
+  title,
+  value,
+  suffix = '',
+  trend,
+  className,
+}: KPICardProps): JSX.Element {
   return (
-    <div
-      className={cn(
-        'rounded-xl bg-card p-4 shadow-sm',
-        className,
-      )}
-    >
+    <div className={cn('studio-panel p-5', className)}>
       <p className="text-sm text-muted-fg">{title}</p>
-      <p className="mt-1 font-serif text-2xl font-semibold text-foreground">
-        <CountUp end={value} duration={1} separator="," />
+      <p className="mt-3 text-[30px] font-semibold tracking-tight tabular-nums text-foreground">
+        {value.toLocaleString('zh-CN')}
         {suffix}
       </p>
       {trend ? (

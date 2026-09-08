@@ -31,14 +31,14 @@ export async function checkConflict(body: Record<string, unknown>): Promise<Conf
 }
 
 export async function rescheduleLesson(
-  id: number,
+  id: number | string,
   body: Record<string, unknown>,
 ): Promise<Lesson> {
   const { data } = await apiClient.post<ApiResponse<Lesson>>(`/lessons/${id}/reschedule`, body);
   return data.data;
 }
 
-export async function cancelLesson(id: number, reason: string): Promise<Lesson> {
+export async function cancelLesson(id: number | string, reason: string): Promise<Lesson> {
   const { data } = await apiClient.post<ApiResponse<Lesson>>(`/lessons/${id}/cancel`, { reason });
   return data.data;
 }

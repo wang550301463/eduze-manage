@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/axios';
 import type { ApiResponse } from '@/lib/api-types';
+import type { EntityId } from '@/features/student/types';
 import type {
   AttendanceRecord,
   DashboardKpis,
@@ -53,7 +54,7 @@ export async function fetchStudentGuardians(
 
 export async function fetchLeaves(params?: {
   status?: number;
-  studentId?: number;
+  studentId?: EntityId | number;
   from?: string;
   to?: string;
 }): Promise<LeaveRecord[]> {

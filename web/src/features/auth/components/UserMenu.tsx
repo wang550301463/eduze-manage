@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { SignOut, User } from '@phosphor-icons/react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/Button';
@@ -15,6 +16,7 @@ import { toast } from '@/lib/toast';
 
 export function UserMenu(): JSX.Element {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
@@ -24,6 +26,7 @@ export function UserMenu(): JSX.Element {
     } catch {
       // 即使接口失败也本地登出
     } finally {
+      queryClient.clear();
       clearAuth();
       toast.info('已退出登录');
       navigate('/login', { replace: true });

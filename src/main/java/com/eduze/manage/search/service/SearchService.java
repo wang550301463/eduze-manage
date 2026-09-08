@@ -1,7 +1,6 @@
 package com.eduze.manage.search.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.eduze.manage.auth.security.CustomUserDetails;
 import com.eduze.manage.branch.domain.Branch;
 import com.eduze.manage.branch.mapper.BranchMapper;
 import com.eduze.manage.course.domain.ClassGroup;
@@ -15,6 +14,7 @@ import com.eduze.manage.student.domain.StudentGuardianRelation;
 import com.eduze.manage.student.mapper.GuardianMapper;
 import com.eduze.manage.student.mapper.StudentGuardianRelationMapper;
 import com.eduze.manage.student.mapper.StudentMapper;
+import com.eduze.manage.tenant.BranchAccessGuard;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -42,6 +40,7 @@ public class SearchService {
     private final BranchMapper branchMapper;
     private final ClassGroupMapper classGroupMapper;
     private final LessonMapper lessonMapper;
+    private final BranchAccessGuard branchAccessGuard;
 
     public List<SearchHit> search(String q, Set<String> types, int limit) {
         if (!StringUtils.hasText(q)) {
@@ -150,9 +149,11 @@ public class SearchService {
                     .id(g.getId())
                     .title(g.getName())
                     .subtitle(g.getPhone() + (studentNames.isEmpty() ? "" : " · 学员: " + studentNames))
-                    .url("/guardians/" + g.getId())
+                    .url(students.isEmpty()
+                            ? "/guardians/" + g.getId()
+                            : "/students?openId=" + students.get(0).getId() + "&openGuardianId=" + g.getId())
                     .branch("")
-                    .branchId(students.get(0).getBranchId())
+                    .branchId(students.isEmpty() ? null : students.get(0).getBranchId())
                     .build());
             if (hits.size() >= PER_TYPE_LIMIT) {
                 break;
@@ -248,13 +249,7 @@ public class SearchService {
     }
 
     private List<Long> allowedBranchIds() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof CustomUserDetails user) {
-            if (!user.isSuperAdmin() && !user.getBranchIds().isEmpty()) {
-                return user.getBranchIds();
-            }
-        }
-        return null;
+        return branchAccessGuard.visibleBranchIdsOrNullForSuperAdmin();
     }
 
     private int score(String keyword, SearchHit hit) {

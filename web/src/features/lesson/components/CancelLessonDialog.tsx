@@ -9,7 +9,7 @@ import { toast } from '@/lib/toast';
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  lessonId: number;
+  lessonId: number | string;
   onDone: () => void;
 };
 
