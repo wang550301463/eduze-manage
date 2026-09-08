@@ -20,6 +20,15 @@ describe('authentication cache boundary', () => {
   it('clears previous-account records before entering a new signed-in session', async () => {
     const client = setup('login'); await userEvent.type(screen.getByLabelText('账号'), 'teacher'); await userEvent.type(screen.getByLabelText('密码'), 'TestPassword9'); await userEvent.click(screen.getByRole('button', { name: '进入工作空间' })); await screen.findByText('工作空间'); expect(client.getQueryData(['private-records'])).toBeUndefined(); expect(useAuthStore.getState().user?.id).toBe(2);
   });
+  it('submits a generated-length administrator password without truncating it', async () => {
+    const password = 'a7'.repeat(20);
+    setup('login');
+    await userEvent.type(screen.getByLabelText('账号'), 'studio-admin');
+    await userEvent.type(screen.getByLabelText('密码'), password);
+    await userEvent.click(screen.getByRole('button', { name: '进入工作空间' }));
+    await screen.findByText('工作空间');
+    expect(login).toHaveBeenCalledWith({ username: 'studio-admin', password });
+  });
   it('discards private cache when signing out, including a failed logout request', async () => {
     useAuthStore.getState().setAuth({ accessToken: 'old', refreshToken: 'old', user }); vi.mocked(logout).mockRejectedValue(new Error('offline')); const client = setup('menu'); await userEvent.click(screen.getByRole('button', { name: '用户菜单' })); await userEvent.click(screen.getByRole('menuitem', { name: '退出登录' })); await waitFor(() => expect(screen.getByText('已退出')).toBeInTheDocument()); expect(client.getQueryData(['private-records'])).toBeUndefined(); expect(useAuthStore.getState().accessToken).toBeNull();
   });
