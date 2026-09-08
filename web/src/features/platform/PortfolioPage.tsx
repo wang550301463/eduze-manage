@@ -245,7 +245,7 @@ export function PortfolioEditor({
       let failure: unknown;
       for (const file of files) {
         try {
-          const id = await uploadMedia(file, record.branchId, 'PORTFOLIO');
+          const id = await uploadMedia(file, record.branchId, 'ARTWORK');
           setDraft((old) => ({
             ...old,
             artworks: [
@@ -344,7 +344,7 @@ export function PortfolioEditor({
               const file = e.target.files?.[0];
               if (file)
                 void action.run(async () => {
-                  const id = await uploadMedia(file, record.branchId, 'PORTFOLIO');
+                  const id = await uploadMedia(file, record.branchId, 'AUDIO');
                   change({ audioMediaIds: [...draft.audioMediaIds, id] });
                 }, '音频已上传，请保存草稿');
             }}

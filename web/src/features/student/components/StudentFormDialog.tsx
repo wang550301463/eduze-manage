@@ -250,7 +250,7 @@ export function StudentFormDialog({
           ) : null}
           {step === 2 ? <GuardianSubForm register={form.register} /> : null}
           {step === 3 ? (
-            <p className="text-sm text-muted-fg">暂不分班（阶段 G 启用班级分配）</p>
+            <p className="text-sm text-muted-fg">保存档案后，可在学员详情中选择「调班」完成分班。</p>
           ) : null}
           <DialogFooter className="gap-2 sm:justify-between">
             <Button
@@ -262,11 +262,14 @@ export function StudentFormDialog({
               上一步
             </Button>
             {step < STEPS.length - 1 ? (
-              <Button type="button" onClick={() => setStep((s) => s + 1)}>
+              <Button key="next" type="button" onClick={(event) => {
+                event.preventDefault();
+                setStep((s) => s + 1);
+              }}>
                 下一步
               </Button>
             ) : (
-              <Button type="submit" disabled={save.isPending || branches.length === 0}>
+              <Button key="submit" type="submit" disabled={save.isPending || branches.length === 0}>
                 提交
               </Button>
             )}

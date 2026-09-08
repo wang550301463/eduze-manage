@@ -55,7 +55,7 @@ export function EntryPanel({
             const files = Array.from(e.target.files ?? []);
             void action.run(async () => {
               for (const file of files) {
-                const id = await uploadMedia(file, branchId, 'PORTFOLIO');
+                const id = await uploadMedia(file, branchId, 'ARTWORK');
                 setMediaIds((old) => [...old, id]);
               }
             }, '课堂照片已上传');

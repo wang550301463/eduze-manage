@@ -19,7 +19,7 @@ type RetryConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
 let refreshPromise: Promise<string> | null = null;
 
-function redirectToLogin(): void {
+export function redirectToLogin(): void {
   useAuthStore.getState().clearAuth();
   const path = window.location.pathname;
   if (path !== '/login') {
@@ -51,7 +51,7 @@ async function doRefresh(): Promise<string> {
   return result.accessToken;
 }
 
-function enqueueRefresh(): Promise<string> {
+export function refreshAccessToken(): Promise<string> {
   if (!refreshPromise) {
     refreshPromise = doRefresh()
       .catch((err) => {
@@ -107,7 +107,7 @@ apiClient.interceptors.response.use(
       if (config && !config._retry) {
         config._retry = true;
         try {
-          const newToken = await enqueueRefresh();
+          const newToken = await refreshAccessToken();
           config.headers.Authorization = `Bearer ${newToken}`;
           return apiClient.request(config);
         } catch {

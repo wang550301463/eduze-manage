@@ -122,7 +122,7 @@ export function BatchUpload({ theme, roster }: { theme: Theme; roster: RosterEnt
               void action.run(async () => {
                 await processAttributedUploads(
                   queue,
-                  (file) => uploadMedia(file, theme.content.branchId, 'PORTFOLIO'),
+                  (file) => uploadMedia(file, theme.content.branchId, 'ARTWORK'),
                   save,
                   setQueue,
                 );

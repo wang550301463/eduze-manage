@@ -327,7 +327,7 @@ export function TeachingPage() {
                       const files = Array.from(e.target.files ?? []);
                       void action.run(async () => {
                         for (const file of files) {
-                          const id = await uploadMedia(file, branch, 'TEACHING');
+                          const id = await uploadMedia(file, branch, 'COURSEWARE');
                           setResource((old) => ({ ...old, mediaIds: [...old.mediaIds, id] }));
                         }
                       }, '文件已上传，可保存草稿');

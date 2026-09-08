@@ -90,14 +90,17 @@ describe('LeaveListPage', () => {
       branches: [],
       permissions: ['leave:read', 'leave:approve'],
     });
-    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
     mock.onGet('/leaves').reply(200, { code: 0, data: [leave] });
     show();
     const record = await screen.findByRole('button', { name: /李小画.*2026-09-08/ });
     const approve = screen.getByRole('button', { name: '批准' });
     expect(record).not.toContainElement(approve);
     await userEvent.click(approve);
-    expect(confirm).toHaveBeenCalledWith('确认批准该请假？');
+    const confirmation = screen.getByRole('dialog', { name: '确认批准请假' });
+    expect(confirmation).toHaveTextContent('李小画');
+    expect(confirmation).toHaveTextContent('2026-09-08');
+    expect(mock.history.post).toHaveLength(0);
+    await userEvent.click(within(confirmation).getByRole('button', { name: '取消' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(mock.history.post).toHaveLength(0);
   });
@@ -116,7 +119,6 @@ describe('LeaveListPage', () => {
         branches: [],
         permissions: ['leave:read', 'leave:approve'],
       });
-      vi.spyOn(window, 'confirm').mockReturnValue(true);
       mock.onGet('/leaves').replyOnce(200, { code: 0, data: [leave] });
       mock.onGet('/leaves').reply(200, { code: 0, data: [] });
       mock
@@ -127,6 +129,11 @@ describe('LeaveListPage', () => {
       await userEvent.click(await screen.findByRole('button', { name: /李小画.*2026-09-08/ }));
       const details = screen.getByRole('dialog', { name: '请假详情' });
       await userEvent.click(within(details).getByRole('button', { name: label }));
+      await userEvent.click(
+        within(screen.getByRole('dialog', { name: `确认${label}请假` })).getByRole('button', {
+          name: `确认${label}`,
+        }),
+      );
 
       await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
       expect(await screen.findByText('暂无记录')).toBeInTheDocument();

@@ -68,7 +68,7 @@ export async function upload(
             : "image/jpeg";
   const ticket = await api.post<UploadTicket>("/v1/media/uploads", {
     branchId: session.scope.branchId,
-    purpose: "PORTFOLIO",
+    purpose: kind === "audio" ? "AUDIO" : "ARTWORK",
     fileName,
     contentType,
     size,

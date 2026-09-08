@@ -1,4 +1,6 @@
 export const MAX_MEDIA = 100;
+/** Media service upload purposes; keep PC and miniapp requests aligned. */
+export type MediaUploadPurpose = 'ARTWORK' | 'COURSEWARE' | 'AUDIO';
 export function uniqueMediaIds(ids: readonly string[]): string[] {
   return [...new Set(ids)];
 }

@@ -1,4 +1,5 @@
 import { useAuthStore } from '@/features/auth/store';
+import { redirectToLogin, refreshAccessToken } from '@/lib/axios';
 
 const TOKEN_KEY = 'eduze_access_token';
 
@@ -27,7 +28,17 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
-  const res = await fetch(path, { ...init, headers });
+  let res = await fetch(path, { ...init, headers });
+  if (
+    res.status === 401 && token &&
+    !path.includes('/auth/login') && !path.includes('/auth/refresh')
+  ) {
+    // Both HTTP clients share one refresh; a command is retried at most once.
+    const refreshed = await refreshAccessToken();
+    headers.set('Authorization', `Bearer ${refreshed}`);
+    res = await fetch(path, { ...init, headers });
+    if (res.status === 401) redirectToLogin();
+  }
   const json = (await res.json()) as ApiEnvelope<T>;
   if (!res.ok || json.code !== 0) {
     throw new ApiError(json.message, json.code, json);

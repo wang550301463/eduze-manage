@@ -1,5 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
+import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
+import { DialogFrame } from '@/components/ui/Dialog';
 import { approveLeave, rejectLeave } from '@/features/attendance/api';
 import type { LeaveRecord } from '@/features/attendance/types';
 import { useAuthStore } from '@/features/auth/store';
@@ -13,10 +15,12 @@ type Props = {
 
 export function LeaveApprovalActions({ leave, onDone, compact }: Props): JSX.Element | null {
   const canApprove = useAuthStore((s) => s.user?.permissions.includes('leave:approve'));
+  const [action, setAction] = useState<'approve' | 'reject' | null>(null);
 
   const approveMutation = useMutation({
     mutationFn: () => approveLeave(leave.id),
     onSuccess: () => {
+      setAction(null);
       toast.success('已批准');
       onDone();
     },
@@ -26,6 +30,7 @@ export function LeaveApprovalActions({ leave, onDone, compact }: Props): JSX.Ele
   const rejectMutation = useMutation({
     mutationFn: () => rejectLeave(leave.id),
     onSuccess: () => {
+      setAction(null);
       toast.success('已拒绝');
       onDone();
     },
@@ -36,27 +41,41 @@ export function LeaveApprovalActions({ leave, onDone, compact }: Props): JSX.Ele
     return null;
   }
 
-  const confirmAct = (label: string, fn: () => void) => {
-    if (window.confirm(`确认${label}该请假？`)) fn();
-  };
+  const pending = approveMutation.isPending || rejectMutation.isPending;
+  const label = action === 'reject' ? '拒绝' : '批准';
 
   return (
     <div className={compact ? 'flex gap-2' : 'flex gap-3'} onClick={(e) => e.stopPropagation()}>
       <Button
         size="sm"
-        onClick={() => confirmAct('批准', () => approveMutation.mutate())}
-        disabled={approveMutation.isPending}
+        onClick={() => setAction('approve')}
+        disabled={pending}
       >
         批准
       </Button>
       <Button
         size="sm"
         variant="secondary"
-        onClick={() => confirmAct('拒绝', () => rejectMutation.mutate())}
-        disabled={rejectMutation.isPending}
+        onClick={() => setAction('reject')}
+        disabled={pending}
       >
         拒绝
       </Button>
+      <DialogFrame
+        open={action !== null}
+        onOpenChange={(open) => { if (!open && !pending) setAction(null); }}
+        title={`确认${label}请假`}
+        description={`${leave.studentName} · ${leave.leaveStartDate} ~ ${leave.leaveEndDate}`}
+        footer={<>
+          <Button variant="secondary" disabled={pending} onClick={() => setAction(null)}>取消</Button>
+          <Button disabled={pending} onClick={() => {
+            if (action === 'approve') approveMutation.mutate();
+            if (action === 'reject') rejectMutation.mutate();
+          }}>{pending ? '处理中…' : `确认${label}`}</Button>
+        </>}
+      >
+        <p className="text-sm text-muted-fg">{leave.reason || '未填写原因'}</p>
+      </DialogFrame>
     </div>
   );
 }
